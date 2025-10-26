@@ -1,0 +1,145 @@
+x-airflow-common: &airflow-common
+  build: .
+  image: custom-airflow:2.9.2
+  env_file:
+    - .env
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}
+
+    _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME}
+    _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+
+    # Database connection for ETL scripts
+    POSTGRES_DB: ${POSTGRES_DB}
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_HOST: postgres   
+    POSTGRES_PORT: 5432
+
+    # API Keys for ETL scripts
+    RAPID_API_KEY: ${RAPID_API_KEY}
+    RentCast: ${RentCast}
+
+    # Email configuration for ETL scripts
+    SENDER_EMAIL: ${SENDER_EMAIL}
+    SENDER_PASSWORD: ${SENDER_PASSWORD}
+    SMTP_SERVER: ${SMTP_SERVER}
+    SMTP_PORT: ${SMTP_PORT}
+
+    PYTHONPATH: /opt/airflow:/opt/airflow/etl:/opt/airflow/data
+    
+    # Airflow SMTP Configuration
+    AIRFLOW__SMTP__SMTP_HOST: ${AIRFLOW_SMTP_HOST}
+    AIRFLOW__SMTP__SMTP_PORT: ${AIRFLOW_SMTP_PORT}
+    AIRFLOW__SMTP__SMTP_STARTTLS: 'True'
+    AIRFLOW__SMTP__SMTP_SSL: 'False'
+    AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW_SMTP_USER}
+    AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD}
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_MAIL_FROM}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+    - ./etl:/opt/airflow/etl
+    - ./data:/opt/airflow/data
+
+    
+    # - ./dbt:/opt/airflow/dbt
+    # - /var/run/docker.sock:/var/run/docker.sock
+  networks:
+    - my-network
+
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./create_airflow_db.sql:/docker-entrypoint-initdb.d/create_airflow_db.sql
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - my-network
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      - airflow-init
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
+    depends_on:
+      - airflow-init
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Initializing Airflow..."
+        airflow db migrate
+        airflow users create \
+          --username "${AIRFLOW_WWW_USER_USERNAME}" \
+          --password "${AIRFLOW_WWW_USER_PASSWORD}" \
+          --firstname Ha \
+          --lastname Do \
+          --role Admin \
+          --email ${AIRFLOW_SMTP_MAIL_FROM}
+    environment:
+      <<: *airflow-common-env
+    restart: "no"
+
+  # dbt:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.dbt
+  #   container_name: dbt
+  #   volumes:
+  #     - ./dbt:/usr/app
+  #   working_dir: /usr/app
+  #   environment:
+  #     DBT_PROFILES_DIR: /usr/app
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - my-network
+  #   command: tail -f /dev/null
+
+
+volumes:
+  postgres-db-volume:
+
+networks:
+  my-network:
+    driver: bridge

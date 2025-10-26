@@ -1,0 +1,64 @@
+# =======================================
+# SENSITIVE FILES - NEVER COMMIT!
+# =======================================
+.env
+.env.*
+*.env
+.env.local
+.env.production
+.env.development
+
+# =======================================
+# PYTHON & RUNTIME FILES
+# =======================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =======================================
+# DATA & DATABASES
+# =======================================
+data/
+*.csv
+*.xlsx
+*.json
+*.db
+*.sqlite
+*.sqlite3
+postgres-data/
+
+# =======================================
+# LOGS & RUNTIME
+# =======================================
+logs/
+*.log
+
+# =======================================
+# IDE & SYSTEM FILES
+# =======================================
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# =======================================
+# DOCKER & CONTAINERS
+# =======================================
+.docker/
+docker-compose.override.yml
+
+# =======================================
+# SECRETS & CREDENTIALS
+# =======================================
+*secret*
+*credential*
+*password*
+*.key
+*.pem
+*.p12
+*.pfx
+
+# env files
+.env
+*.env
