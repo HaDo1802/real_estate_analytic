@@ -1,94 +1,100 @@
 # Real Estate ETL Pipeline
 
-A complete Extract, Transform, and Load (ETL) pipeline for real estate data from the Zillow API to PostgreSQL database.
+A production-focused Extract, Transform, Load (ETL) pipeline that extracts real‑estate listings (Zillow), transforms and validates them, and loads them into a PostgreSQL database for analytics.
 
-## 🏗️ Project Structure
+Table of contents
+- [Project status](#project-status)
+- [Repository layout](#repository-layout)
+- [Quick start](#quick-start)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Run full pipeline](#run-full-pipeline)
+  - [Run individual modules](#run-individual-modules)
+- [Database schema](#database-schema)
+- [Logging & monitoring](#logging--monitoring)
+- [Testing & development](#testing--development)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap / Next steps](#roadmap--next-steps)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project status
+Stable for development and demonstration purposes. Intended for local or controlled production use after adding production-grade secrets management, CI/CD, and monitoring.
+
+## Repository layout
+This README is tailored to the files and layout that currently exist in this repository:
 
 ```
 real_estate_project/
 ├── etl/
 │   ├── extract.py          # Data extraction from Zillow API
 │   ├── transform.py        # Data transformation and cleaning
-│   ├── load.py            # PostgreSQL database loading
-│   ├── main.py            # Main ETL pipeline orchestrator
-│   └── notebook.ipynb     # Jupyter notebook for exploration and testing
-├── requirement.txt        # Python dependencies
-└── README.md             # This file
+│   ├── load.py             # PostgreSQL database loading
+│   ├── main.py             # Main ETL pipeline orchestrator (run_etl_pipeline, setup_database)
+│   └── notebook.ipynb      # Exploration & manual testing
+├── requirement.txt         # Python dependencies (note: singular filename)
+└── README.md               # This file
 ```
 
-## 🚀 Quick Start
+> Note: The above reflects the current repository files exactly (including `requirement.txt`). If you prefer `requirements.txt` please rename and update any CI/automation accordingly.
 
-### 1. Install Dependencies
+## Quick start
 
+Prerequisites
+- Python 3.8+
+- PostgreSQL (local or remote)
+- Valid Zillow API credentials (or equivalent data source)
+
+Install dependencies:
 ```bash
 pip install -r requirement.txt
 ```
 
-### 2. Set Up PostgreSQL
-
-Make sure PostgreSQL is running on your local machine and create a database:
-
+Create a PostgreSQL database:
 ```sql
 CREATE DATABASE real_estate;
 ```
 
-### 3. Configure Environment
-
-Set your PostgreSQL password as an environment variable:
-
+Set required environment variables (example; adapt to your environment and secret manager):
 ```bash
-export POSTGRES_PASSWORD="your_password_here"
+export POSTGRES_PASSWORD="your_db_password"
+export ZILLOW_API_KEY="your_zillow_api_key"   # recommended; extract.py may need to be adapted to read this
 ```
 
-### 4. Run the ETL Pipeline
+## Configuration
+
+Database configuration is passed as a dictionary to the loader functions. Example config used in the codebase:
+
+```python
+db_config = {
+    'host': 'localhost',
+    'port': 5432,
+    'database': 'real_estate',
+    'username': 'postgres',
+    'password': 'your_password'
+}
+```
+
+If `etl.extract` currently reads the Zillow API key directly from the code, switch it to read from an environment variable (recommended) or a secrets manager.
+
+## Usage
+
+Run the full ETL pipeline (from `etl/main.py`):
 
 ```python
 from etl.main import run_etl_pipeline
 
-# Run the complete pipeline
+# run the complete pipeline
 success = run_etl_pipeline(
     location="Los Angeles, CA",
-    status_type="ForSale",
-    home_type="Houses"
+    status_type="ForSale",   # e.g., ForSale, ForRent, Sold
+    home_type="Houses"       # e.g., Houses, Condos, Townhomes
 )
 ```
 
-## 📊 Database Schema
+Run the individual modules (examples):
 
-The pipeline creates a `real_estate_properties` table with the following structure:
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | SERIAL | Primary key |
-| `zillow_property_id` | BIGINT | Unique Zillow property identifier |
-| `street_address` | VARCHAR(255) | Property street address |
-| `city` | VARCHAR(100) | City |
-| `state` | VARCHAR(50) | State |
-| `zip_code` | VARCHAR(20) | ZIP code |
-| `price` | DECIMAL(12,2) | Property price |
-| `zestimate` | DECIMAL(12,2) | Zillow's estimated value |
-| `rent_zestimate` | DECIMAL(12,2) | Estimated rental value |
-| `bathrooms` | INTEGER | Number of bathrooms |
-| `bedrooms` | INTEGER | Number of bedrooms |
-| `living_area_sqft` | DECIMAL(10,2) | Living area in square feet |
-| `lot_area_sqft` | DECIMAL(12,2) | Lot area in square feet |
-| `latitude` | DECIMAL(10,8) | Property latitude |
-| `longitude` | DECIMAL(11,8) | Property longitude |
-| `property_type` | VARCHAR(50) | Type of property |
-| `listing_status` | VARCHAR(50) | Listing status |
-| `days_on_zillow` | INTEGER | Days listed on Zillow |
-| `is_fsba` | BOOLEAN | For Sale by Agent flag |
-| `is_open_house` | BOOLEAN | Open house availability |
-| `country` | VARCHAR(50) | Country |
-| `currency` | VARCHAR(10) | Currency |
-| `processed_at` | TIMESTAMP | Data processing timestamp |
-| `created_at` | TIMESTAMP | Record creation timestamp |
-| `updated_at` | TIMESTAMP | Last update timestamp |
-
-## 🔧 Individual Module Usage
-
-### Extract Data
-
+- Extract:
 ```python
 from etl.extract import extract_real_estate_data
 
@@ -99,128 +105,112 @@ data = extract_real_estate_data(
 )
 ```
 
-### Transform Data
-
+- Transform:
 ```python
 import pandas as pd
 from etl.transform import transform_real_estate_data, validate_transformed_data
 
-# Assuming you have raw data in a DataFrame
-df_raw = pd.DataFrame(data['props'])
+df_raw = pd.DataFrame(data['props'])   # depends on extract output format
 df_transformed = transform_real_estate_data(df_raw)
-
-# Validate the transformation
 is_valid = validate_transformed_data(df_transformed)
 ```
 
-### Load Data
-
+- Load:
 ```python
 from etl.load import load_real_estate_data
 
-# Load transformed data to PostgreSQL
 success = load_real_estate_data(
-    df_raw=df_raw,
-    db_config={
-        'host': 'localhost',
-        'port': 5432,
-        'database': 'real_estate',
-        'username': 'postgres',
-        'password': 'your_password'
-    }
+    df_raw=df_transformed,
+    db_config=db_config
 )
 ```
 
-## 🧪 Testing and Development
-
-### Using Jupyter Notebook
-
-1. Open the notebook:
-   ```bash
-   jupyter notebook etl/notebook.ipynb
-   ```
-
-2. Run the cells to see the data extraction and transformation in action
-
-3. Test the individual components before running the full pipeline
-
-### Database Setup Helper
-
+- Database setup helper:
 ```python
 from etl.main import setup_database
-setup_database()  # Run once to create the schema
+setup_database()  # creates schema and necessary indexes (run once)
 ```
 
-## 🔑 Configuration Options
+## Database schema
 
-### Database Configuration
+The pipeline produces a `real_estate_properties` table with the essential columns used by the codebase:
 
-You can customize the database connection by passing a config dictionary:
+| Column               | Type               | Description |
+|---------------------:|-------------------:|------------:|
+| id                   | SERIAL             | Primary key |
+| zillow_property_id   | BIGINT             | Unique Zillow property identifier |
+| street_address       | VARCHAR(255)       | Street address |
+| city                 | VARCHAR(100)       | City |
+| state                | VARCHAR(50)        | State |
+| zip_code             | VARCHAR(20)        | ZIP/postal code |
+| price                | DECIMAL(12,2)      | Listing price |
+| zestimate            | DECIMAL(12,2)      | Zillow estimate |
+| rent_zestimate       | DECIMAL(12,2)      | Rent estimate |
+| bathrooms            | INTEGER            | Number of bathrooms |
+| bedrooms             | INTEGER            | Number of bedrooms |
+| living_area_sqft     | DECIMAL(10,2)      | Living area (sqft) |
+| lot_area_sqft        | DECIMAL(12,2)      | Lot area (sqft) |
+| latitude             | DECIMAL(10,8)      | Latitude |
+| longitude            | DECIMAL(11,8)      | Longitude |
+| property_type        | VARCHAR(50)        | Property type |
+| listing_status       | VARCHAR(50)        | Listing status |
+| days_on_zillow       | INTEGER            | Days on market |
+| is_fsba              | BOOLEAN            | For sale by agent flag |
+| is_open_house        | BOOLEAN            | Open house flag |
+| country              | VARCHAR(50)        | Country |
+| currency             | VARCHAR(10)        | Currency code |
+| processed_at         | TIMESTAMP          | Processing timestamp |
+| created_at           | TIMESTAMP          | Record creation timestamp |
+| updated_at           | TIMESTAMP          | Last update timestamp |
 
-```python
-db_config = {
-    'host': 'localhost',        # Database host
-    'port': 5432,              # Database port  
-    'database': 'real_estate', # Database name
-    'username': 'postgres',    # Username
-    'password': 'password'     # Password
-}
-```
+The loader uses upserts (INSERT ... ON CONFLICT) to avoid duplicate records. Indexes are created on common query columns — confirm in `etl/main.py` or `setup_database()` for exact index definitions.
 
-### API Parameters
+## Logging & monitoring
 
-Customize the data extraction:
+- The pipeline emits logs to `etl_pipeline.log` (see `etl.main` for configuration).
+- Logs include extraction results, transformation statistics, DB operations, and errors.
+- For production, forward logs to a centralized system (e.g., ELK, Cloud Logging), and add metrics/alerts.
 
-```python
-run_etl_pipeline(
-    location="New York, NY",    # Search location
-    status_type="ForRent",      # ForSale, ForRent, Sold
-    home_type="Condos"          # Houses, Condos, Townhomes
-)
-```
+## Testing & development
 
-## 📝 Logging
+- Use `etl/notebook.ipynb` for exploratory testing.
+- Test each component independently before running the full pipeline:
+  - extract -> returns raw payload
+  - transform -> returns a validated DataFrame or structured payload
+  - load -> persists records to PostgreSQL
 
-The pipeline creates detailed logs in `etl_pipeline.log` with information about:
-- Data extraction results
-- Transformation statistics
-- Database operations
-- Error messages and debugging info
+Consider adding:
+- Unit tests (pytest)
+- Integration tests using a disposable PostgreSQL (Docker)
+- Linting (flake8/black) and pre-commit hooks
 
-## ⚠️ Important Notes
+## Troubleshooting
 
-1. **API Key**: Make sure your Zillow API key is properly configured in the `extract.py` file
-2. **Database Permissions**: Ensure your PostgreSQL user has CREATE, INSERT, and UPDATE permissions
-3. **Data Validation**: The pipeline includes validation steps to ensure data quality
-4. **Upserts**: The loading process uses INSERT ... ON CONFLICT to handle duplicate properties
-5. **Indexes**: The schema includes optimized indexes for common query patterns
+Common issues
+- Connection errors: verify PostgreSQL is running, host/port/credentials are correct.
+- API limits or missing credentials: ensure the Zillow API key is set and respected by `extract.py`.
+- Memory pressure: process large datasets in batches rather than single large in-memory DataFrames.
+- Duplicate entries: confirm upsert behavior and unique constraints in DB schema.
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Connection Error**: Check PostgreSQL is running and credentials are correct
-2. **API Limits**: The Zillow API may have rate limits - add delays if needed
-3. **Memory Issues**: For large datasets, consider processing in batches
-4. **Data Quality**: Check the logs for validation warnings and errors
-
-### Useful Queries
-
-Check loaded data:
+Useful SQL checks:
 ```sql
 SELECT COUNT(*) FROM real_estate_properties;
 SELECT DISTINCT city, state FROM real_estate_properties;
 SELECT AVG(price) FROM real_estate_properties WHERE price IS NOT NULL;
 ```
 
-## 🚀 Next Steps
+## Roadmap / Next steps
+- Add CI (tests, lint, build) and a release workflow.
+- Replace any hard-coded secrets with environment variables or a secrets manager.
+- Add scheduling (cron, Airflow) and observability (metrics, alerts).
+- Add additional data sources and enrichments (demographics, school ratings).
+- Implement more robust data quality checks and schema evolution handling.
 
-1. **Scheduling**: Set up cron jobs or Airflow DAGs for automated runs
-2. **Monitoring**: Add alerting for pipeline failures
-3. **Data Quality**: Implement more sophisticated validation rules
-4. **Visualization**: Connect to tools like Grafana or Tableau for analytics
-5. **API Expansion**: Add support for additional real estate APIs
+## Contributing
+1. Open an issue describing the change or feature.
+2. Create a branch: git checkout -b feat/your-feature
+3. Add tests and update `requirement.txt` if you add libs.
+4. Open a pull request describing your changes.
 
-## 📄 License
-
-This project is for educational and development purposes. Please respect the Zillow API terms of service.
+## License
+This project is for educational and development purposes. When using third-party APIs (e.g., Zillow) ensure you comply with their terms of service.
