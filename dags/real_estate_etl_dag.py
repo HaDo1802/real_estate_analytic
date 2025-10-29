@@ -1,10 +1,15 @@
 from datetime import datetime, timedelta
+import logging
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.email import EmailOperator
+from airflow.models import Variable
+from airflow.utils.dates import days_ago
+
 import sys
 import os
+import logging
 
 # Add ETL directory to Python path
 sys.path.append("/opt/airflow/etl")
@@ -12,6 +17,91 @@ sys.path.append("/opt/airflow/etl")
 # Import your ETL modules
 from main_etl import run_etl_pipeline
 from load import load_csv_to_postgres
+from email_notifier import EmailNotifier
+
+
+def send_success_notification(**context):
+    """Send success notification with pipeline metrics."""
+    try:
+        # Get pipeline metrics from XCom or calculate
+        records_processed = (
+            context["task_instance"].xcom_pull(
+                task_ids="upload_cleaned_data_to_postgres"
+            )
+            or "Unknown"
+        )
+
+        # Calculate duration using task instance timing
+        task_instance = context["task_instance"]
+        if task_instance.start_date and task_instance.end_date:
+            duration = str(task_instance.end_date - task_instance.start_date).split(
+                "."
+            )[0]
+        else:
+            # Fallback: calculate from data interval
+            start_time = context["data_interval_start"]
+            # Convert to string and back to datetime to make timezone-naive
+            start_naive = datetime.strptime(
+                start_time.strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"
+            )
+            end_naive = datetime.now()
+            duration = str(end_naive - start_naive).split(".")[0]
+
+        details = {
+            "records_processed": records_processed,
+            "duration": duration,
+            "location": "Los Angeles, CA",
+            "dag_id": context["dag"].dag_id,
+            "execution_date": context["ds"],
+            "task_instance": context["task_instance"].task_id,
+            "dag_run_id": context["dag_run"].run_id,
+            "execution_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+
+        notifier = EmailNotifier()
+        success = notifier.send_notification(success=True, details=details)
+
+        if not success:
+            logging.warning(
+                "Email notification failed, but pipeline completed successfully"
+            )
+        else:
+            logging.info("Success notification sent successfully")
+
+    except Exception as e:
+        logging.error(f"Error sending success notification: {e}")
+        # Don't fail the DAG just because email failed
+
+
+def send_failure_notification(context):
+    """Send failure notification with error details."""
+    try:
+        # Get error information
+        task_instance = context["task_instance"]
+        exception = context.get("exception")
+
+        details = {
+            "error": str(exception) if exception else "Unknown error",
+            "failed_task": task_instance.task_id,
+            "dag_id": context["dag"].dag_id,
+            "execution_date": context["ds"],
+            "log_url": getattr(task_instance, "log_url", "N/A"),
+            "failure_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "dag_run_id": context["dag_run"].run_id,
+            "try_number": task_instance.try_number,
+        }
+
+        notifier = EmailNotifier()
+        success = notifier.send_notification(success=False, details=details)
+
+        if success:
+            logging.info("Failure notification sent successfully")
+        else:
+            logging.error("Failed to send failure notification")
+
+    except Exception as e:
+        logging.error(f"Error sending failure notification: {e}")
+
 
 # Default arguments for the DAG
 default_args = {
@@ -24,6 +114,7 @@ default_args = {
     "retries": 1,
     "retry_delay": timedelta(minutes=2),
     "catchup": False,
+    "on_failure_callback": send_failure_notification,
 }
 
 # Create the DAG
@@ -34,7 +125,8 @@ with DAG(
     schedule_interval=timedelta(hours=4),  # Every 4 hours
     max_active_runs=1,  # Only one instance running at a time
     tags=["real_estate", "etl", "zillow"],
-    catchup=False) as dag:
+    catchup=False,
+) as dag:
 
     # Setup data directory
     setup_data_dir = BashOperator(
@@ -72,21 +164,14 @@ with DAG(
     upload_cleaned_data_to_postgres = BashOperator(
         task_id="upload_cleaned_data_to_postgres",
         bash_command="python /opt/airflow/etl/load.py",
+        do_xcom_push=True,  # Enable XCom capture
     )
 
     # 5. Send success email
-    success_email = EmailOperator(
+    success_email = PythonOperator(
         task_id="send_success_email",
-        to=["havando1802@gmail.com"],
-        subject="✅ Real Estate ETL Pipeline - Success",
-        html_content="""
-        <h3>🏠 Real Estate ETL Pipeline Completed Successfully</h3>
-        <p><strong>Execution Date:</strong> {{ ds }}</p>
-        <p><strong>DAG:</strong> {{ dag.dag_id }}</p>
-        <p><strong>Status:</strong> ✅ Success</p>
-        <p>Your Los Angeles real estate data has been updated successfully!</p>
-        <p><strong>Data processed:</strong> Raw data → Transformed → PostgreSQL</p>
-        """,
+        python_callable=send_success_notification,
+        provide_context=True,
     )
 
 
