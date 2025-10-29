@@ -2,26 +2,7 @@
 
 A production-focused Extract, Transform, Load (ETL) pipeline that extracts real‑estate listings (Zillow), transforms and validates them, and loads them into a PostgreSQL database for analytics.
 
-Table of contents
-- [Project status](#project-status)
-- [Repository layout](#repository-layout)
-- [Quick start](#quick-start)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  - [Run full pipeline](#run-full-pipeline)
-  - [Run individual modules](#run-individual-modules)
-- [Database schema](#database-schema)
-- [Testing & development](#testing--development)
-- [Troubleshooting](#troubleshooting)
-- [Roadmap / Next steps](#roadmap--next-steps)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Project status
-Stable for development and demonstration purposes. Intended for local or controlled production use after adding production-grade secrets management, CI/CD, and monitoring.
-
-## Repository layout
-This README is tailored to the files and layout that currently exist in this repository:
+## 🏗️ Project Structure
 
 ```
 real_estate_project/
@@ -127,66 +108,65 @@ success = load_real_estate_data(
 - Database setup helper:
 ```python
 from etl.main import setup_database
-setup_database()  # creates schema and necessary indexes (run once)
+setup_database()  # Run once to create the schema
 ```
 
-## Database schema
+## 🔑 Configuration Options
 
-The pipeline produces a `real_estate_properties` table with the essential columns used by the codebase:
+### Database Configuration
 
-| Column               | Type               | Description |
-|---------------------:|-------------------:|------------:|
-| id                   | SERIAL             | Primary key |
-| zillow_property_id   | BIGINT             | Unique Zillow property identifier |
-| street_address       | VARCHAR(255)       | Street address |
-| city                 | VARCHAR(100)       | City |
-| state                | VARCHAR(50)        | State |
-| zip_code             | VARCHAR(20)        | ZIP/postal code |
-| price                | DECIMAL(12,2)      | Listing price |
-| zestimate            | DECIMAL(12,2)      | Zillow estimate |
-| rent_zestimate       | DECIMAL(12,2)      | Rent estimate |
-| bathrooms            | INTEGER            | Number of bathrooms |
-| bedrooms             | INTEGER            | Number of bedrooms |
-| living_area_sqft     | DECIMAL(10,2)      | Living area (sqft) |
-| lot_area_sqft        | DECIMAL(12,2)      | Lot area (sqft) |
-| latitude             | DECIMAL(10,8)      | Latitude |
-| longitude            | DECIMAL(11,8)      | Longitude |
-| property_type        | VARCHAR(50)        | Property type |
-| listing_status       | VARCHAR(50)        | Listing status |
-| days_on_zillow       | INTEGER            | Days on market |
-| is_fsba              | BOOLEAN            | For sale by agent flag |
-| is_open_house        | BOOLEAN            | Open house flag |
-| country              | VARCHAR(50)        | Country |
-| currency             | VARCHAR(10)        | Currency code |
-| processed_at         | TIMESTAMP          | Processing timestamp |
-| created_at           | TIMESTAMP          | Record creation timestamp |
-| updated_at           | TIMESTAMP          | Last update timestamp |
+You can customize the database connection by passing a config dictionary:
 
-The loader uses upserts (INSERT ... ON CONFLICT) to avoid duplicate records. Indexes are created on common query columns — confirm in `etl/main.py` or `setup_database()` for exact index definitions.
+```python
+db_config = {
+    'host': 'localhost',        # Database host
+    'port': 5432,              # Database port  
+    'database': 'real_estate', # Database name
+    'username': 'postgres',    # Username
+    'password': 'password'     # Password
+}
+```
 
+### API Parameters
 
-## Testing & development
+Customize the data extraction:
 
-- Use `etl/notebook.ipynb` for exploratory testing.
-- Test each component independently before running the full pipeline:
-  - extract -> returns raw payload
-  - transform -> returns a validated DataFrame or structured payload
-  - load -> persists records to PostgreSQL
+```python
+run_etl_pipeline(
+    location="New York, NY",    # Search location
+    status_type="ForRent",      # ForSale, ForRent, Sold
+    home_type="Condos"          # Houses, Condos, Townhomes
+)
+```
 
-Consider adding:
-- Unit tests (pytest)
-- Integration tests using a disposable PostgreSQL (Docker)
-- Linting (flake8/black) and pre-commit hooks
+## 📝 Logging
 
-## Troubleshooting
+The pipeline creates detailed logs in `etl_pipeline.log` with information about:
+- Data extraction results
+- Transformation statistics
+- Database operations
+- Error messages and debugging info
 
-Common issues
-- Connection errors: verify PostgreSQL is running, host/port/credentials are correct.
-- API limits or missing credentials: ensure the Zillow API key is set and respected by `extract.py`.
-- Memory pressure: process large datasets in batches rather than single large in-memory DataFrames.
-- Duplicate entries: confirm upsert behavior and unique constraints in DB schema.
+## ⚠️ Important Notes
 
-Useful SQL checks:
+1. **API Key**: Make sure your Zillow API key is properly configured in the `extract.py` file
+2. **Database Permissions**: Ensure your PostgreSQL user has CREATE, INSERT, and UPDATE permissions
+3. **Data Validation**: The pipeline includes validation steps to ensure data quality
+4. **Upserts**: The loading process uses INSERT ... ON CONFLICT to handle duplicate properties
+5. **Indexes**: The schema includes optimized indexes for common query patterns
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Connection Error**: Check PostgreSQL is running and credentials are correct
+2. **API Limits**: The Zillow API may have rate limits - add delays if needed
+3. **Memory Issues**: For large datasets, consider processing in batches
+4. **Data Quality**: Check the logs for validation warnings and errors
+
+### Useful Queries
+
+Check loaded data:
 ```sql
 SELECT COUNT(*) FROM real_estate_properties;
 SELECT DISTINCT city, state FROM real_estate_properties;
