@@ -136,7 +136,7 @@ services:
   #     - my-network
   #   command: tail -f /dev/null
 
-
+# so when usingn docker compose down -v, the volume about postgres-db-volume will be deleted
 volumes:
   postgres-db-volume:
 
