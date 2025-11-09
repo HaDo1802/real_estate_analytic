@@ -47,6 +47,25 @@ def calculate_date_listing(daysOnZillow: Any) -> Optional[datetime]:
         return None
 
 
+def convert_unix_timestamp(timestamp_value: Any) -> Optional[datetime]:
+    """Convert Unix timestamp (in milliseconds) to datetime."""
+    if pd.isna(timestamp_value) or not timestamp_value:
+        return None
+
+    try:
+        # Handle both string and numeric timestamps
+        if isinstance(timestamp_value, str):
+            timestamp_value = float(timestamp_value)
+
+        # Convert from milliseconds to seconds
+        timestamp_seconds = float(timestamp_value) / 1000.0
+
+        # Convert to datetime
+        return datetime.fromtimestamp(timestamp_seconds, tz=timezone.utc)
+    except (ValueError, TypeError, OSError):
+        return None
+
+
 def extract_listing_subtype_info(listing_subtype: Any) -> Dict[str, bool]:
     default_flags = {"is_fsba": False, "is_open_house": False}
 
@@ -66,6 +85,95 @@ def extract_listing_subtype_info(listing_subtype: Any) -> Dict[str, bool]:
         }
 
     return default_flags
+
+
+def calculate_price_metrics(
+    price: Any, rent: Any, living_area: Any
+) -> Dict[str, Optional[float]]:
+    """Calculate price and rent per square foot metrics."""
+    metrics = {"price_per_sqft": None, "rent_per_sqft": None}
+
+    try:
+        # Calculate price per sqft
+        if price and living_area and not pd.isna(price) and not pd.isna(living_area):
+            price_val = float(price)
+            area_val = float(living_area)
+            if area_val > 0:
+                metrics["price_per_sqft"] = round(price_val / area_val, 2)
+    except (ValueError, TypeError):
+        pass
+
+    try:
+        # Calculate rent per sqft
+        if rent and living_area and not pd.isna(rent) and not pd.isna(living_area):
+            rent_val = float(rent)
+            area_val = float(living_area)
+            if area_val > 0:
+                metrics["rent_per_sqft"] = round(rent_val / area_val, 2)
+    except (ValueError, TypeError):
+        pass
+
+    return metrics
+
+
+def categorize_price(price: Any) -> str:
+    """Categorize properties by price range for Vegas market."""
+    try:
+        if pd.isna(price) or not price:
+            return "Unknown"
+
+        price_val = float(price)
+
+        if price_val >= 800000:
+            return "Luxury"
+        elif price_val >= 400000:
+            return "Mid-range"
+        elif price_val >= 200000:
+            return "Affordable"
+        else:
+            return "Budget"
+
+    except (ValueError, TypeError):
+        return "Unknown"
+
+
+def extract_vegas_district(address: str, city: str) -> str:
+    """Extract Vegas district/neighborhood from address."""
+    if not address or pd.isna(address):
+        return "Unknown"
+
+    address_lower = address.lower()
+
+    # Map common Vegas areas
+    district_mapping = {
+        "summerlin": "Summerlin",
+        "henderson": "Henderson",
+        "north las vegas": "North Las Vegas",
+        "enterprise": "Enterprise",
+        "spring valley": "Spring Valley",
+        "green valley": "Green Valley",
+        "centennial": "Centennial",
+        "anthem": "Anthem",
+        "mountains edge": "Mountains Edge",
+        "downtown": "Downtown Las Vegas",
+        "strip": "The Strip",
+        "fremont": "Downtown Las Vegas",
+        "paradise": "Paradise",
+        "winchester": "Winchester",
+    }
+
+    # Check address for district keywords
+    for keyword, district in district_mapping.items():
+        if keyword in address_lower:
+            return district
+
+    # Fallback to city name if available
+    if city and not pd.isna(city):
+        city_clean = str(city).strip()
+        if city_clean:
+            return city_clean
+
+    return "Las Vegas"
 
 
 def transform_real_estate_data(input_path: str, output_path: str) -> pd.DataFrame:
@@ -120,8 +228,10 @@ def transform_real_estate_data(input_path: str, output_path: str) -> pd.DataFram
         df_transformed["is_fsba"] = False
         df_transformed["is_open_house"] = False
 
-    # Add data processing timestamp
-    df_transformed["processed_at"] = datetime.now(timezone.utc)
+    # Add data processing timestamp and ETL run tracking
+    current_time = datetime.now(timezone.utc)
+    df_transformed["processed_at"] = current_time
+    df_transformed["etl_run_id"] = current_time.strftime("%Y%m%d_%H%M%S")
 
     # Add date_listing column
     if "daysOnZillow" in df_transformed.columns:
@@ -130,6 +240,41 @@ def transform_real_estate_data(input_path: str, output_path: str) -> pd.DataFram
         )
     else:
         df_transformed["date_listing"] = None
+
+    # Calculate price metrics for visualization
+    logger.info("Calculating price metrics...")
+    price_metrics = df_transformed.apply(
+        lambda row: calculate_price_metrics(
+            row.get("price"), row.get("rentZestimate"), row.get("livingArea")
+        ),
+        axis=1,
+    )
+
+    # Extract price metrics to separate columns
+    df_transformed["price_per_sqft"] = price_metrics.apply(
+        lambda x: x["price_per_sqft"]
+    )
+    df_transformed["rent_per_sqft"] = price_metrics.apply(lambda x: x["rent_per_sqft"])
+
+    # Add price categories
+    logger.info("Categorizing price ranges...")
+    df_transformed["price_category"] = df_transformed["price"].apply(categorize_price)
+
+    # Extract Vegas districts
+    logger.info("Extracting Vegas districts...")
+    df_transformed["vegas_district"] = df_transformed.apply(
+        lambda row: extract_vegas_district(row.get("address", ""), row.get("city", "")),
+        axis=1,
+    )
+
+    # Convert Unix timestamp fields to proper datetime format
+    logger.info("Converting timestamp fields...")
+    timestamp_fields = ["datePriceChanged", "comingSoonOnMarketDate"]
+
+    for field in timestamp_fields:
+        if field in df_transformed.columns:
+            df_transformed[field] = df_transformed[field].apply(convert_unix_timestamp)
+            logger.info(f"Converted {field} timestamps")
 
     # Select final columns for database loading
     excluded_columns = ["imgSrc", "detailUrl", "hasImage", "carouselPhotos"]

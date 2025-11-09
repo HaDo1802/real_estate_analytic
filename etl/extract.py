@@ -24,7 +24,13 @@ HEADERS = {
     "X-RapidAPI-Host": "zillow56.p.rapidapi.com",
 }
 
-LOCATIONS = ["Los Angeles, CA"]
+LOCATIONS = [
+    "Las Vegas, NV",
+    "Henderson, NV",
+    "North Las Vegas, NV",
+    "Summerlin, NV",
+    "Enterprise, NV",
+]
 
 
 # Extract real estate data from Zillow API
@@ -33,7 +39,7 @@ def fetch_zillow(location, status="ForSale"):
     Fetch real estate data from Zillow API
 
     Args:
-        location: Location to search (e.g., "Los Angeles, CA")
+        location: Location to search (e.g., "Las Vegas, NV")
         status: Property status (e.g., "ForSale", "ForRent")
 
     Returns:
@@ -97,9 +103,20 @@ def fetch_zillow(location, status="ForSale"):
         # Create directory if it doesn't exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-        # Save to CSV
-        df_raw.to_csv(output_path, index=False)
-        logger.info(f"Extracted {len(df_raw)} properties and saved to {output_path}")
+        # Save to CSV with smart accumulation
+        file_exists = os.path.exists(output_path)
+
+        # If file exists, append without header; if new file, include header
+        if file_exists:
+            df_raw.to_csv(output_path, mode="a", header=False, index=False)
+            logger.info(
+                f"Appended {len(df_raw)} properties to existing file {output_path}"
+            )
+        else:
+            df_raw.to_csv(output_path, index=False)
+            logger.info(
+                f"Created new file with {len(df_raw)} properties: {output_path}"
+            )
         return df_raw
 
     except Exception as e:
