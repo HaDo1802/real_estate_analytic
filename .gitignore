@@ -64,3 +64,4 @@ docker-compose.override.yml
 *.env
 
 learning_note.txt
+vegas_dashboard.py

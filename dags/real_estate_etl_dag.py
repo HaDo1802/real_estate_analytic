@@ -50,7 +50,7 @@ def send_success_notification(**context):
         details = {
             "records_processed": records_processed,
             "duration": duration,
-            "location": "Los Angeles, CA",
+            "location": "Las Vegas, NV",
             "dag_id": context["dag"].dag_id,
             "execution_date": context["ds"],
             "task_instance": context["task_instance"].task_id,
@@ -121,8 +121,8 @@ default_args = {
 with DAG(
     "real_estate_etl_pipeline",
     default_args=default_args,
-    description="Real Estate ETL Pipeline - Runs every 4 hours",
-    schedule_interval=timedelta(hours=4),  # Every 4 hours
+    description="Real Estate ETL Pipeline - Runs every 10 minutes",
+    schedule_interval=timedelta(minutes=10),  # Every 10 minutes
     max_active_runs=1,  # Only one instance running at a time
     tags=["real_estate", "etl", "zillow"],
     catchup=False,
