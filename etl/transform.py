@@ -299,7 +299,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         os.makedirs(output_dir, exist_ok=True)
         
         # Save timestamped file (for audit trail)
-        timestamp = current_time.strftime("%Y%m%d_%H%M%S")
+        timestamp = current_time.strftime("%Y%m%d")
         timestamped_file = os.path.join(output_dir, f"transformed_{timestamp}.csv")
         df_final.to_csv(timestamped_file, index=False)
         logger.info(f"💾 Saved timestamped file: {timestamped_file}")

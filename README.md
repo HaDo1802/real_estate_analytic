@@ -1,193 +1,200 @@
-# Real Estate ETL Pipeline
+# Real Estate Data Pipeline
 
-A production-focused Extract, Transform, Load (ETL) pipeline that extracts real‑estate listings data using Zillow API, transforms and loads them into a PostgreSQL database for furthere analytics.
+This project implements a Extract-Transform-Load (ETL) pipeline for real estate listings data, designed to process and analyze real-time property listings. The pipeline extracts property data from Zillow API, leveraging Apache Airflow, PostgreSQL, and Docker to automate data collection and storage for downstream analytics and machine learning applications.
 
-## 🏗️ Project Structure
+---
+
+## 🗂 Project Structure
 
 ```
-real_estate_project/
-├── etl/
-│   ├── extract.py          # Data extraction from Zillow API
-│   ├── transform.py        # Data transformation and cleaning
-│   ├── load.py             # PostgreSQL database loading
-│   ├── main.py             # Main ETL pipeline orchestrator (run_etl_pipeline, setup_database)
-│  
-├── requirement.txt         # Python dependencies (note: singular filename)
-└── README.md               # This file
+.
+├── dags/                      # Airflow DAG definitions
+│   └── real_estate_etl_dag.py # Main pipeline workflow
+├── etl/                       # ETL modules
+│   ├── extract.py            # API data extraction
+│   ├── transform.py          # Data cleaning & enrichment
+│   ├── load.py               # PostgreSQL loading
+│   ├── main_etl.py           # Pipeline orchestrator
+│   └── email_notifier.py     # Script for customized email
+├── data/                      # Data storage (gitignored)
+│   ├── raw/                  # Extracted data snapshots
+│   └── transformed/          # Cleaned data ready for loading
+├── docker/
+│   ├── docker-compose.yaml   # Service orchestration
+│   └── Dockerfile            # Custom Airflow image
+├── .env                      
+├── requirements.txt          # Packages dependencies
+└── README.md                 
 ```
 
-> Note: The above reflects the current repository files exactly (including `requirement.txt`). If you prefer `requirements.txt` please rename and update any CI/automation accordingly.
+---
 
-## Quick start
+## ⚙️ Technology Stack
 
-Prerequisites
-- Python 3.8+
-- PostgreSQL (local or remote)
-- Valid Zillow API credentials (or equivalent data source)
+- **Data Source**: Zillow API (RapidAPI)
+- **Data Processing**: Python 3.9+ with Pandas, NumPy
+- **Workflow Orchestration**: Apache Airflow 
+- **Data Warehouse**: PostgreSQL 13
+- **Containerization**: Docker
+- **Email Notifications**: SMTP (Gmail)
 
-Install dependencies:
-```bash
-pip install -r requirement.txt
-```
+---
 
-Create a PostgreSQL database:
+## 🧱 Data Architecture
+
+### 1. Data Source
+The project processes real estate listings from the **Zillow API** via [RapidAPI](https://rapidapi.com/apimaker/api/zillow-com1/playground), focusing on the Las Vegas market with plans to expand to additional locations. Current extraction targets multiple neighborhoods including **Summerlin, Henderson, Downtown Las Vegas, and surrounding areas**.
+
+### 2. Data Processing Pipeline
+
+#### **Data Extraction**
+- Automatically fetch property listings from Zillow API via RapidAPI
+- Extract comprehensive property details including property idetification, prices, location, and other data
+- Store raw data with timestamps in `raw_data_YYYYMMDD.csv`, allowing audit tracing for daily run
+- Features intelligent pagination and rate limiting for API compliance
+- Multi-location support with configurable location list
+
+#### **Data Transformation & Cleaning**
+- Parse and standardize address components (street, city, state, zip)
+- Normalize lot area measurements (acres to sqft conversion)
+- Calculate derived fields (listing dates, district classification)
+- Extract listing features (FSBA status, open house indicators)
+- Handle missing values and validate data quality
+- Generate cleaned dataset with consistent schema stored in `transformed_YYYYMMDD.csv`
+
+#### **Database Loading**
+- Load cleaned data into PostgreSQL using efficient COPY operations, allowing bulk insert without burden on worrying data type mismatch configuration
+- Implement snapshot-based historical tracking strategy
+- Store all records in `properties_data_history` table (append-only)
+- Maintain current view via `properties_data_current` (latest snapshot per property)
+- Support incremental loading for continuous data updates
+- Enable time-series analysis and price tracking
+
+### 3. Data Quality Framework
+- Essential field validation (property ID, etl_run_id) use for duplicate detection and removal
+- Pipeline monitoring via email notifications
+- PostgreSQL data quality checks post-load
+
+---
+
+## 🚀 Project Components
+
+### 📊 Airflow DAGs
+Located in `dags/`:
+
+- **Pipeline orchestration** for automated data collection every day at 6 AM
+- **Task scheduling** with dependency management
+- **Retry logic** for fault-tolerant execution
+- **Email notifications** on success/failure
+- **Execution tracking** via Airflow web UI (port 8080)
+
+### 🛠 ETL Modules
+Located in `etl/`:
+
+- **extract.py**: Multi-location API scraper with pagination
+- **transform.py**: Data cleaning, feature engineering, validation
+- **load.py**: PostgreSQL COPY operations with environment auto-detection
+- **main_etl.py**: Standalone ETL runner for manual execution
+- **email_notifier.py**: SMTP notification service with HTML templates
+
+### 🗄 Database Schema
+**History Table** (append-only):
 ```sql
-CREATE DATABASE real_estate;
+CREATE TABLE real_estate_data.properties_data_history (
+    zillow_property_id BIGINT,
+    street_address TEXT,
+    city TEXT,
+    vegas_district TEXT,
+    zip_code TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    livingArea DOUBLE PRECISION,
+    Normalized_lotAreaValue DOUBLE PRECISION,
+    bathrooms DOUBLE PRECISION,
+    bedrooms INTEGER,
+    price BIGINT,
+    rentZestimate DOUBLE PRECISION,
+    zestimate DOUBLE PRECISION,
+    propertyType TEXT,
+    Unit TEXT,
+    daysOnZillow INTEGER,
+    date_listing TIMESTAMPTZ,
+    datePriceChanged TIMESTAMPTZ,
+    listingStatus TEXT,
+    is_fsba BOOLEAN,
+    is_open_house BOOLEAN,
+    processed_at TIMESTAMPTZ NOT NULL,
+    etl_run_id TEXT NOT NULL
+);
 ```
 
-Set required environment variables (example; adapt to your environment and secret manager):
-```bash
-export POSTGRES_PASSWORD="your_db_password"
-export ZILLOW_API_KEY="your_zillow_api_key"   # recommended; extract.py may need to be adapted to read this
-```
-
-## Configuration
-
-Database configuration is passed as a dictionary to the loader functions. Example config used in the codebase:
-
-```python
-db_config = {
-    'host': 'localhost',
-    'port': 5432,
-    'database': 'real_estate',
-    'username': 'postgres',
-    'password': 'your_password'
-}
-```
-
-If `etl.extract` currently reads the Zillow API key directly from the code, switch it to read from an environment variable (recommended) or a secrets manager.
-
-## Usage
-
-Run the full ETL pipeline (from `etl/main.py`):
-
-```python
-from etl.main import run_etl_pipeline
-
-# run the complete pipeline
-success = run_etl_pipeline(
-    location="Los Angeles, CA",
-    status_type="ForSale",   # e.g., ForSale, ForRent, Sold
-    home_type="Houses"       # e.g., Houses, Condos, Townhomes
-)
-```
-
-Run the individual modules (examples):
-
-- Extract:
-```python
-from etl.extract import extract_real_estate_data
-
-data = extract_real_estate_data(
-    location="San Francisco, CA",
-    status_type="ForSale",
-    home_type="Houses"
-)
-```
-
-- Transform:
-* Some observation/logics we implement:
-- DatePriceChanged is on UNIX format that need to be re-formmated
-- lotArea is inconsitent with lotAreaUnit between sqft and acres
-```python
-import pandas as pd
-from etl.transform import transform_real_estate_data, validate_transformed_data
-
-df_raw = pd.DataFrame(data['props'])   # depends on extract output format
-df_transformed = transform_real_estate_data(df_raw)
-is_valid = validate_transformed_data(df_transformed)
-```
-
-- Load:
-```python
-from etl.load import load_real_estate_data
-
-success = load_real_estate_data(
-    df_raw=df_transformed,
-    db_config=db_config
-)
-```
-
-- Database setup helper:
-```python
-from etl.main import setup_database
-setup_database()  # Run once to create the schema
-```
-
-## 🔑 Configuration Options
-
-### Database Configuration
-
-You can customize the database connection by passing a config dictionary:
-
-```python
-db_config = {
-    'host': 'localhost',        # Database host
-    'port': 5432,              # Database port  
-    'database': 'real_estate', # Database name
-    'username': 'postgres',    # Username
-    'password': 'password'     # Password
-}
-```
-
-### API Parameters
-
-Customize the data extraction:
-
-```python
-run_etl_pipeline(
-    location="New York, NY",    # Search location
-    status_type="ForRent",      # ForSale, ForRent, Sold
-    home_type="Condos"          # Houses, Condos, Townhomes
-)
-```
-
-## 📝 Logging
-
-The pipeline creates detailed logs in `etl_pipeline.log` with information about:
-- Data extraction results
-- Transformation statistics
-- Database operations
-- Error messages and debugging info
-
-## ⚠️ Important Notes
-
-1. **API Key**: Make sure your Zillow API key is properly configured in the `extract.py` file
-2. **Database Permissions**: Ensure your PostgreSQL user has CREATE, INSERT, and UPDATE permissions
-3. **Data Validation**: The pipeline includes validation steps to ensure data quality
-4. **Upserts**: The loading process uses INSERT ... ON CONFLICT to handle duplicate properties
-5. **Indexes**: The schema includes optimized indexes for common query patterns
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Connection Error**: Check PostgreSQL is running and credentials are correct
-2. **API Limits**: The Zillow API may have rate limits - add delays if needed
-3. **Memory Issues**: For large datasets, consider processing in batches
-4. **Data Quality**: Check the logs for validation warnings and errors
-
-### Useful Queries
-
-Check loaded data:
+**Current View** (latest snapshot):
 ```sql
-SELECT COUNT(*) FROM real_estate_properties;
-SELECT DISTINCT city, state FROM real_estate_properties;
-SELECT AVG(price) FROM real_estate_properties WHERE price IS NOT NULL;
+CREATE VIEW real_estate_data.properties_data_current AS
+SELECT DISTINCT ON (zillow_property_id) *
+FROM real_estate_data.properties_data_history
+ORDER BY zillow_property_id, processed_at DESC;
 ```
 
-## Roadmap / Next steps
-- Add CI (tests, lint, build) and a release workflow.
-- Replace any hard-coded secrets with environment variables or a secrets manager.
-- Add scheduling (cron, Airflow) and observability (metrics, alerts).
-- Add additional data sources and enrichments (demographics, school ratings).
-- Implement more robust data quality checks and schema evolution handling.
+---
 
-## Contributing
-1. Open an issue describing the change or feature.
-2. Create a branch: git checkout -b feat/your-feature
-3. Add tests and update `requirement.txt` if you add libs.
-4. Open a pull request describing your changes.
+## 📦 Key Dependencies
 
-## License
-This project is for educational and development purposes. When using third-party APIs (e.g., Zillow) ensure you comply with their terms of service.
+- **pandas==1.5.0** - Data processing and transformation
+- **numpy==1.24.0** - Numerical operations
+- **requests==2.28.0** - HTTP library for API calls
+- **psycopg2-binary==2.9.0** - PostgreSQL database adapter
+- **python-dotenv==1.0.0** - Environment variable management
+- **apache-airflow[postgres]==2.9.2** - Workflow orchestration
+- **apache-airflow-providers-postgres>=5.0.0** - PostgreSQL integration
+
+---
+
+## 🚀 Key Features
+
+### Comprehensive Data Extraction
+- **Multi-location support**: Configurable list of target locations
+- **Rate limiting**: API-compliant request throttling (0.2s between calls)
+- **Pagination handling**: Automatic traversal of result pages
+- **Error recovery**: Robust exception handling with retries
+
+
+### Snapshot-Based Storage
+- **Historical tracking**: Full audit trail of all property changes
+- **Price history**: Track listing price changes over time
+- **Point-in-time queries**: Analyze market state at any date
+- **Zero data loss**: Append-only architecture prevents overwrites
+
+### Production-Ready Operations
+- **Automated scheduling**: Runs every 10 minutes via Airflow
+- **Email notifications**: Success/failure alerts with execution details
+- **Comprehensive logging**: Multi-level logs for debugging
+- **Environment flexibility**: Auto-detects Docker vs local execution
+- **Containerized deployment**: Docker Compose for consistent environments
+
+---
+
+## 🎯 Design Decisions
+
+### Why Snapshot-Based Storage?
+Traditional upsert strategies overwrite historical data, losing valuable time-series information. This pipeline uses **append-only history** with a **current view** to enable:
+- Price trend analysis over time
+- Market velocity metrics (average days to sale)
+- Point-in-time market snapshots
+- Complete audit trail for compliance
+
+### Why Airflow Over Cron?
+- **Visual monitoring**: Web UI for pipeline status and logs
+- **Dependency management**: Task execution order enforcement
+- **Retry logic**: Automatic failure recovery with backoff
+- **Scalability**: Easy migration to distributed execution
+- **Extensibility**: Rich ecosystem of providers and operators
+
+### Why PostgreSQL?
+- **ACID compliance**: Data integrity guarantees
+- **Rich data types**: JSONB, arrays, geospatial support
+- **Performance**: Optimized for analytical queries
+- **Cost**: Open-source with enterprise features
+- **Integration**: Native Airflow support
+- **Future Consideration**: As data grow, I will move to cloud-based solution such as Snowflake, S3,..
+---

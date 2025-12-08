@@ -121,10 +121,10 @@ default_args = {
 with DAG(
     "real_estate_etl_pipeline",
     default_args=default_args,
-    description="Real Estate ETL Pipeline - Runs every 10 minutes",
-    schedule_interval=timedelta(minutes=10),  # Every 10 minutes
+    description="Real Estate ETL Pipeline - Runs every day at 6 AM",
+    schedule_interval="0 6 * * *",  # Every day at 6 AM
     max_active_runs=1,  # Only one instance running at a time
-    tags=["real_estate", "etl", "zillow"],
+    tags=["real_estate", "zillow"],
     catchup=False,
 ) as dag:
 
