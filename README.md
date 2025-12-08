@@ -1,6 +1,6 @@
 # Real Estate ETL Pipeline
 
-A production-focused Extract, Transform, Load (ETL) pipeline that extracts real‑estate listings (Zillow), transforms and validates them, and loads them into a PostgreSQL database for analytics.
+A production-focused Extract, Transform, Load (ETL) pipeline that extracts real‑estate listings data using Zillow API, transforms and loads them into a PostgreSQL database for furthere analytics.
 
 ## 🏗️ Project Structure
 
@@ -11,7 +11,7 @@ real_estate_project/
 │   ├── transform.py        # Data transformation and cleaning
 │   ├── load.py             # PostgreSQL database loading
 │   ├── main.py             # Main ETL pipeline orchestrator (run_etl_pipeline, setup_database)
-│   └── notebook.ipynb      # Exploration & manual testing
+│  
 ├── requirement.txt         # Python dependencies (note: singular filename)
 └── README.md               # This file
 ```
@@ -86,6 +86,9 @@ data = extract_real_estate_data(
 ```
 
 - Transform:
+* Some observation/logics we implement:
+- DatePriceChanged is on UNIX format that need to be re-formmated
+- lotArea is inconsitent with lotAreaUnit between sqft and acres
 ```python
 import pandas as pd
 from etl.transform import transform_real_estate_data, validate_transformed_data

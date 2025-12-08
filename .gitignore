@@ -1,7 +1,7 @@
 # =======================================
 # SENSITIVE FILES - NEVER COMMIT!
 # =======================================
-.env
+
 .env.*
 *.env
 .env.local
@@ -59,9 +59,8 @@ docker-compose.override.yml
 *.p12
 *.pfx
 
-# env files
-.env
-*.env
 
 learning_note.txt
 vegas_dashboard.py
+
+notebook.ipynb

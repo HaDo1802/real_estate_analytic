@@ -16,7 +16,7 @@ sys.path.append("/opt/airflow/etl")
 
 # Import your ETL modules
 from main_etl import run_etl_pipeline
-from load import load_csv_to_postgres
+from load import load_csv
 from email_notifier import EmailNotifier
 
 
@@ -149,8 +149,8 @@ with DAG(
     clean_data = BashOperator(
         task_id="clean_data",
         bash_command="python /opt/airflow/etl/transform.py "
-        "--input /opt/airflow/data/raw_data.csv "
-        "--output /opt/airflow/data/transformed_real_estate_data.csv "
+        "--input /opt/airflow/data/raw/raw_data.csv "
+        "--output /opt/airflow/data/transformed/transformed_latest.csv "
         "--log-level INFO",
         retries=2,
     )

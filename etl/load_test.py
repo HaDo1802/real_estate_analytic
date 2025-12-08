@@ -3,53 +3,20 @@ import pandas as pd
 import logging
 import psycopg2
 from psycopg2 import sql
-from dotenv import load_dotenv
-
-load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+from dotenv import load_dotenv
 
+load_dotenv()
 DEFAULT_FILE = os.path.abspath(
     os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "data",
-        "transformed",
-        "transformed_latest.csv",
+        os.path.dirname(__file__), "..", "data", "transformed_latest.csv"
     )
 )
-
 DEFAULT_SCHEMA = os.getenv("DEFAULT_SCHEMA", "real_estate_data")
-HISTORY_TABLE = "properties_data_history"
-CURRENT_VIEW = "properties_data_current"
-
-ORDERED_COLS = [
-    "zillow_property_id",
-    "street_address",
-    "city",
-    "vegas_district",
-    "zip_code",
-    "latitude",
-    "longitude",
-    "livingArea",
-    "Normalized_lotAreaValue",
-    "bathrooms",
-    "bedrooms",
-    "price",
-    "rentZestimate",
-    "zestimate",
-    "propertyType",
-    "Unit",
-    "daysOnZillow",
-    "date_listing",
-    "datePriceChanged",
-    "listingStatus",
-    "is_fsba",
-    "is_open_house",
-    "processed_at",
-    "etl_run_id",
-]
+DEFAULT_TABLE = os.getenv("DEFAULT_TABLE", "properties_sale_prices")
+DEFAULT_MODE = os.getenv("DEFAULT_MODE", "append")
 
 
 def get_connection():
@@ -76,59 +43,94 @@ def get_connection():
         )
 
 
-def ensure_schema_and_objects(conn):
+def ensure_schema_and_table(csv_file, schema, table, conn):
+    """Create schema/table if they don't exist with optimized column types."""
+    df = pd.read_csv(csv_file, nrows=1)
     cur = conn.cursor()
 
+    # Ensure schema
     cur.execute(
-        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}")
-        .format(sql.Identifier(DEFAULT_SCHEMA))
+        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(sql.Identifier(schema))
     )
 
+    # Ensure table
     cur.execute(
-        sql.SQL(
-            f"""
-            CREATE TABLE IF NOT EXISTS {DEFAULT_SCHEMA}.{HISTORY_TABLE} (
-                zillow_property_id BIGINT,
-                street_address TEXT,
-                city TEXT,
-                vegas_district TEXT,
-                zip_code TEXT,
-                latitude DOUBLE PRECISION,
-                longitude DOUBLE PRECISION,
-                livingArea DOUBLE PRECISION,
-                Normalized_lotAreaValue DOUBLE PRECISION,
-                bathrooms DOUBLE PRECISION,
-                bedrooms INTEGER,
-                price BIGINT,
-                rentZestimate DOUBLE PRECISION,
-                zestimate DOUBLE PRECISION,
-                propertyType TEXT,
-                Unit TEXT,
-                daysOnZillow INTEGER,
-                date_listing TIMESTAMPTZ,
-                datePriceChanged TIMESTAMPTZ,
-                listingStatus TEXT,
-                is_fsba BOOLEAN,
-                is_open_house BOOLEAN,
-                processed_at TIMESTAMPTZ NOT NULL,
-                etl_run_id TEXT NOT NULL
-            );
         """
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_schema=%s AND table_name=%s
         )
+    """,
+        (schema, table),
     )
+    exists = cur.fetchone()[0]
 
-    cur.execute(
-        sql.SQL(
-            f"""
-            CREATE OR REPLACE VIEW {DEFAULT_SCHEMA}.{CURRENT_VIEW} AS
-            SELECT DISTINCT ON (zillow_property_id) *
-            FROM {DEFAULT_SCHEMA}.{HISTORY_TABLE}
-            ORDER BY zillow_property_id, processed_at DESC;
-        """
-        )
-    )
+    if not exists:
+        logger.info(f"Creating table {schema}.{table} with optimized column types...")
 
-    conn.commit()
+        # Define column types for better performance and visualization
+        column_types = {
+            "zillow_property_id": "BIGINT",
+            "street_address": "TEXT",
+            "city": "TEXT",
+            "vegas_district": "TEXT",
+            "zip_code": "TEXT",
+            "latitude": "DOUBLE PRECISION",
+            "longitude": "DOUBLE PRECISION",
+            "livingArea": "DOUBLE PRECISION",
+            "Normalized_lotAreaValue": "DOUBLE PRECISION",
+            "bathrooms": "DOUBLE PRECISION",
+            "bedrooms": "INTEGER",
+            "price": "BIGINT",
+            "rentZestimate": "DOUBLE PRECISION",
+            "zestimate": "DOUBLE PRECISION",
+            "propertyType": "TEXT",
+            "Unit": "TEXT",
+            "daysOnZillow": "INTEGER",
+            "date_listing": "TIMESTAMPTZ",
+            "datePriceChanged": "TIMESTAMPTZ",
+            "listingStatus": "TEXT",
+            "is_fsba": "BOOLEAN",
+            "is_open_house": "BOOLEAN",
+            "processed_at": "TIMESTAMPTZ NOT NULL",
+            "etl_run_id": "TEXT NOT NULL"
+        }
+
+        # Build column definitions
+        column_definitions = []
+        for col in df.columns:
+            col_type = column_types.get(col, "TEXT")
+            column_definitions.append(f'"{col}" {col_type}')
+
+        columns_sql = ", ".join(column_definitions)
+
+        # Add primary key constraint on zillow_property_id to prevent duplicates
+        # Use ON CONFLICT DO NOTHING for graceful duplicate handling
+        create_sql = sql.SQL(
+            "CREATE TABLE {}.{} (" + columns_sql + ", UNIQUE (zillow_property_id,etl_run_id))"
+        ).format(sql.Identifier(schema), sql.Identifier(table))
+        cur.execute(create_sql)
+
+        # # Add indexes for better query performance
+        # logger.info(f"Creating indexes for {schema}.{table}...")
+        # indexes = [
+        #     f"CREATE INDEX IF NOT EXISTS idx_{table}_price ON {schema}.{table} (price)",
+        #     f"CREATE INDEX IF NOT EXISTS idx_{table}_location ON {schema}.{table} (vegas_district)",
+        #     f"CREATE INDEX IF NOT EXISTS idx_{table}_category ON {schema}.{table} (price_category)",
+        #     f'CREATE INDEX IF NOT EXISTS idx_{table}_property_type ON {schema}.{table} ("propertyType")',
+        #     f'CREATE INDEX IF NOT EXISTS idx_{table}_listing_status ON {schema}.{table} ("listingStatus")',
+        #     f"CREATE INDEX IF NOT EXISTS idx_{table}_processed_at ON {schema}.{table} (processed_at)",
+        # ]
+
+        # for index_sql in indexes:
+        #     try:
+        #         cur.execute(index_sql)
+        #     except Exception as e:
+        #         logger.warning(f"Could not create index: {e}")
+
+        conn.commit()
+        logger.info(f"✅ Created {schema}.{table} with optimized schema and indexes")
     cur.close()
 
 
@@ -171,7 +173,6 @@ def load_csv(csv_file=DEFAULT_FILE):
         cur.close()
         conn.close()
 
-
 if __name__ == "__main__":
     # Environment detection and validation
     is_docker = os.path.exists("/opt/airflow")
@@ -213,7 +214,7 @@ if __name__ == "__main__":
     for key, value in config_info.items():
         logger.info(f" {key}: {value}")
     logger.info(f" Schema: {DEFAULT_SCHEMA}")
-    logger.info(f" Table: {HISTORY_TABLE}")
+    logger.info(f" Table: {DEFAULT_TABLE}")
     logger.info(f" File: {DEFAULT_FILE}")
 
     try:
@@ -223,7 +224,7 @@ if __name__ == "__main__":
         logger.info(" Database connection successful!")
 
         logger.info(" Loading data to PostgreSQL...")
-        load_csv()
+        load_csv_to_postgres()
         logger.info(" Data load completed successfully!")
 
     except Exception as e:
