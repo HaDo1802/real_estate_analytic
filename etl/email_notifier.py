@@ -9,16 +9,19 @@ import smtplib
 import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta
+from datetime import datetime
 from dotenv import load_dotenv
-import logging
+
+# Import centralized logger
+from logger import get_logger
+
+# Initialize logger for this module
+logger = get_logger(__name__)
 
 # Load environment variables
 load_dotenv(
     dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
 )
-
-logger = logging.getLogger(__name__)
 
 
 class EmailNotifier:
@@ -30,7 +33,9 @@ class EmailNotifier:
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.sender_email = os.getenv("SENDER_EMAIL")
         self.sender_password = os.getenv("SENDER_PASSWORD")  # App password for Gmail
-        self.recipient_email = "havando1802@gmail.com" # add more people if needed
+        self.recipient_email = os.getenv("RECIPIENT_EMAIL", "havando1802@gmail.com")
+
+        logger.info(f"Email notifier initialized: {self.sender_email} -> {self.recipient_email}")
 
     def send_notification(self, success: bool, details: dict = None):
         """
@@ -41,12 +46,13 @@ class EmailNotifier:
             details (dict): Additional details about the pipeline run
         """
         if not self.sender_email or not self.sender_password:
-            logger.error(
-                "Email credentials not configured. Skipping email notification."
-            )
+            logger.error("Email credentials not configured (SENDER_EMAIL or SENDER_PASSWORD missing)")
+            logger.error("Skipping email notification")
             return False
 
         try:
+            logger.info(f"Preparing {'success' if success else 'failure'} email notification...")
+            
             # Create message
             message = MIMEMultipart()
             message["From"] = self.sender_email
@@ -63,48 +69,86 @@ class EmailNotifier:
             message.attach(MIMEText(body, "html"))
 
             # Send email
+            logger.info(f"Connecting to SMTP server: {self.smtp_server}:{self.smtp_port}")
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
                 server.login(self.sender_email, self.sender_password)
                 server.send_message(message)
 
-            logger.info(
-                f"Email notification sent successfully to {self.recipient_email}"
-            )
+            logger.info(f"Email notification sent successfully to {self.recipient_email}")
             return True
 
+        except smtplib.SMTPAuthenticationError:
+            logger.error("SMTP authentication failed - check SENDER_EMAIL and SENDER_PASSWORD")
+            return False
+        except smtplib.SMTPException as e:
+            logger.error(f"SMTP error: {str(e)}")
+            return False
         except Exception as e:
-            logger.error(f"Failed to send email notification: {e}")
+            logger.error(f"Failed to send email notification: {str(e)}", exc_info=True)
             return False
 
     def _create_success_email_body(self, details: dict = None) -> str:
         """Create HTML email body for successful pipeline run."""
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if details is None:
+            details = {}
 
         html_body = f"""
         <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .header {{ background-color: #28a745; color: white; padding: 20px; border-radius: 5px; }}
+                .content {{ padding: 20px; }}
+                .metric {{ background-color: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #28a745; }}
+                .metric-label {{ font-weight: bold; color: #666; }}
+                .metric-value {{ font-size: 18px; color: #28a745; }}
+                .footer {{ font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }}
+            </style>
+        </head>
         <body>
-        <h2 style="color: #28a745;">🎉 Real Estate ETL Pipeline Completed Successfully!</h2>
-        
-        <p><strong>Execution Time:</strong> {current_time}</p>
-        
-        <h3>Pipeline Summary:</h3>
-        <ul>
-            <li><strong>Status:</strong> <span style="color: #28a745;">SUCCESS</span></li>
-            <li><strong>Records Processed:</strong> {details.get('records_processed', 'N/A') if details else 'N/A'}</li>
-            <li><strong>Duration:</strong> {details.get('duration', 'N/A') if details else 'N/A'}</li>
-            <li><strong>Location:</strong> {details.get('location', 'N/A') if details else 'N/A'}</li>
-        </ul>
-        
-        <h3>Next Steps:</h3>
-        <p>Your real estate data has been successfully extracted, transformed, and loaded. 
-        You can now access the updated data in your database for analysis.</p>
-        
-        <hr>
-        <p style="font-size: 12px; color: #666;">
-        This is an automated message from your Real Estate ETL Pipeline.<br>
-        Pipeline Location: /Users/hado/Desktop/Career/Coding/Data Engineer /Project/real_estate_project/
-        </p>
+            <div class="header">
+                <h2>🎉 Real Estate ETL Pipeline Completed Successfully!</h2>
+            </div>
+            
+            <div class="content">
+                <p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>
+                <p><strong>Execution Time:</strong> {details.get('end_time', 'N/A')}</p>
+                
+                <h3>Pipeline Metrics:</h3>
+                
+                <div class="metric">
+                    <div class="metric-label">Properties Extracted</div>
+                    <div class="metric-value">{details.get('properties_extracted', 'N/A')}</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-label">Records Loaded to Database</div>
+                    <div class="metric-value">{details.get('records_loaded', 'N/A')}</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-label">Data Quality Pass Rate</div>
+                    <div class="metric-value">{details.get('quality_rate', 'N/A')}</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-label">Total Duration</div>
+                    <div class="metric-value">{details.get('duration', 'N/A')}</div>
+                </div>
+                
+                <h3>Next Steps:</h3>
+                <p>Your real estate data has been successfully extracted, transformed, and loaded into the database.</p>
+                <p>You can now query the data using:</p>
+                <pre style="background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+SELECT COUNT(*) FROM real_estate_data.properties_data_history;
+SELECT * FROM real_estate_data.properties_data_current LIMIT 10;</pre>
+            </div>
+            
+            <div class="footer">
+                <p>This is an automated message from your Real Estate ETL Pipeline.</p>
+                <p>Environment: {details.get('environment', 'N/A')}</p>
+            </div>
         </body>
         </html>
         """
@@ -112,37 +156,59 @@ class EmailNotifier:
 
     def _create_failure_email_body(self, details: dict = None) -> str:
         """Create HTML email body for failed pipeline run."""
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if details is None:
+            details = {}
 
         html_body = f"""
         <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .header {{ background-color: #dc3545; color: white; padding: 20px; border-radius: 5px; }}
+                .content {{ padding: 20px; }}
+                .error-box {{ background-color: #f8d7da; border: 1px solid #dc3545; padding: 15px; margin: 15px 0; border-radius: 5px; }}
+                .info {{ background-color: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #dc3545; }}
+                .footer {{ font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }}
+                ol {{ line-height: 2; }}
+            </style>
+        </head>
         <body>
-        <h2 style="color: #dc3545;">⚠️ Real Estate ETL Pipeline Failed</h2>
-        
-        <p><strong>Execution Time:</strong> {current_time}</p>
-        
-        <h3>Pipeline Summary:</h3>
-        <ul>
-            <li><strong>Status:</strong> <span style="color: #dc3545;">FAILED</span></li>
-            <li><strong>Error:</strong> {details.get('error', 'Unknown error') if details else 'Unknown error'}</li>
-            <li><strong>Location:</strong> {details.get('location', 'N/A') if details else 'N/A'}</li>
-        </ul>
-        
-        <h3>Troubleshooting Steps:</h3>
-        <ol>
-            <li>Check the pipeline logs at: <code>etl_pipeline.log</code></li>
-            <li>Verify API key is valid and not expired</li>
-            <li>Ensure internet connection is stable</li>
-            <li>Check if the Zillow API is responding</li>
-        </ol>
-        
-        <p style="color: #dc3545;"><strong>Action Required:</strong> Please investigate and resolve the issue.</p>
-        
-        <hr>
-        <p style="font-size: 12px; color: #666;">
-        This is an automated message from your Real Estate ETL Pipeline.<br>
-        Pipeline Location: /Users/hado/Desktop/Career/Coding/Data Engineer /Project/real_estate_project/
-        </p>
+            <div class="header">
+                <h2>⚠️ Real Estate ETL Pipeline Failed</h2>
+            </div>
+            
+            <div class="content">
+                <p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>
+                <p><strong>Execution Time:</strong> {details.get('start_time', 'N/A')}</p>
+                <p><strong>Duration Before Failure:</strong> {details.get('total_execution_time', 'N/A')}</p>
+                
+                <div class="error-box">
+                    <p><strong>Failed Step:</strong> {details.get('failed_step', 'UNKNOWN')}</p>
+                    <p><strong>Error Message:</strong></p>
+                    <p style="font-family: monospace; color: #721c24;">{details.get('error', 'Unknown error occurred')}</p>
+                </div>
+                
+                <div class="info">
+                    <p><strong>Environment:</strong> {details.get('environment', 'N/A')}</p>
+                    {f"<p><strong>Properties Extracted:</strong> {details.get('properties_extracted', 'N/A')}</p>" if 'properties_extracted' in details else ''}
+                </div>
+                
+                <h3>🔧 Troubleshooting Steps:</h3>
+                <ol>
+                    <li>Check the pipeline logs: <code>etl/log.txt</code></li>
+                    <li>Verify API key is valid in <code>.env</code> file</li>
+                    <li>Ensure database connection is working</li>
+                    <li>Check internet connectivity</li>
+                    <li>Verify Zillow API is responding</li>
+                </ol>
+                
+                <p style="color: #dc3545; font-weight: bold;">⚠️ Action Required: Please investigate and resolve the issue.</p>
+            </div>
+            
+            <div class="footer">
+                <p>This is an automated message from your Real Estate ETL Pipeline.</p>
+                <p>If this issue persists, review the error logs and configuration settings.</p>
+            </div>
         </body>
         </html>
         """
@@ -151,20 +217,32 @@ class EmailNotifier:
 
 def send_test_email():
     """Send a test email to verify configuration."""
+    logger.info("Starting test email...")
+    
     notifier = EmailNotifier()
     test_details = {
-        "records_processed": 25,
+        "etl_run_id": "20241209_TEST",
+        "properties_extracted": 125,
+        "records_loaded": 120,
+        "quality_rate": "96.0%",
         "duration": "00:02:15",
-        "location": "Los Angeles, CA",
+        "end_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "environment": "Local (Test)"
     }
 
-    print("Sending test email...")
+    logger.info("Sending test success email...")
     success = notifier.send_notification(success=True, details=test_details)
 
     if success:
-        print("✅ Test email sent successfully!")
+        logger.info("✅ Test email sent successfully!")
+        logger.info("Check your inbox to verify the email format")
     else:
-        print("❌ Failed to send test email. Check your configuration.")
+        logger.error("❌ Failed to send test email")
+        logger.error("Check your .env file for correct email configuration:")
+        logger.error("  - SENDER_EMAIL")
+        logger.error("  - SENDER_PASSWORD (use App Password for Gmail)")
+        logger.error("  - SMTP_SERVER (default: smtp.gmail.com)")
+        logger.error("  - SMTP_PORT (default: 587)")
 
 
 if __name__ == "__main__":

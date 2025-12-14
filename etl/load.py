@@ -1,14 +1,16 @@
 import os
+import sys
 import pandas as pd
-import logging
 import psycopg2
 from psycopg2 import sql
-from dotenv import load_dotenv
+from datetime import datetime
+from logger import get_logger
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(PROJECT_ROOT)
+from utils.config import config
 
-load_dotenv()
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Initialize logger for this module
+logger = get_logger(__name__)
 
 DEFAULT_FILE = os.path.abspath(
     os.path.join(
@@ -20,7 +22,6 @@ DEFAULT_FILE = os.path.abspath(
     )
 )
 
-DEFAULT_SCHEMA = os.getenv("DEFAULT_SCHEMA", "real_estate_data")
 HISTORY_TABLE = "properties_data_history"
 CURRENT_VIEW = "properties_data_current"
 
@@ -53,41 +54,33 @@ ORDERED_COLS = [
 
 
 def get_connection():
-    """Connect to Postgres using .env credentials with environment auto-detection."""
-
-    # Auto-detect environment and use appropriate credentials
-    if os.path.exists("/opt/airflow"):
-        # Running inside Docker/Airflow
-        return psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST", "postgres"),
-            dbname=os.getenv("POSTGRES_DB"),
-            user=os.getenv("POSTGRES_USER"),
-            password=os.getenv("POSTGRES_PASSWORD"),
-            port=int(os.getenv("POSTGRES_PORT", 5432)),
-        )
-    else:
-        # Running locally
-        return psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST_LOCAL", "localhost"),
-            dbname=os.getenv("POSTGRES_DB_LOCAL"),
-            user=os.getenv("POSTGRES_USER_LOCAL"),
-            password=os.getenv("POSTGRES_PASSWORD_LOCAL"),
-            port=int(os.getenv("POSTGRES_PORT_LOCAL", 5432)),
-        )
+    """Connect to Postgres using config with environment auto-detection."""
+    
+    db_config = config.get_db_config()
+    logger.info(
+        f"Connecting to PostgreSQL ({config.ENV_TYPE}): "
+        f"{db_config['host']}:{db_config['port']}/{db_config['dbname']} "
+        f"as {db_config['user']}"
+    )
+    
+    return psycopg2.connect(**db_config)
 
 
 def ensure_schema_and_objects(conn):
+    """Create schema, tables, and views if they don't exist."""
     cur = conn.cursor()
-
+    # Create schema
+    logger.info(f"Creating schema if not exists: {config.DEFAULT_SCHEMA}")
     cur.execute(
-        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}")
-        .format(sql.Identifier(DEFAULT_SCHEMA))
+        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(sql.Identifier(config.DEFAULT_SCHEMA))
     )
 
+    # Create history table
+    logger.info(f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}")
     cur.execute(
         sql.SQL(
             f"""
-            CREATE TABLE IF NOT EXISTS {DEFAULT_SCHEMA}.{HISTORY_TABLE} (
+            CREATE TABLE IF NOT EXISTS {config.DEFAULT_SCHEMA}.{HISTORY_TABLE} (
                 zillow_property_id BIGINT,
                 street_address TEXT,
                 city TEXT,
@@ -117,12 +110,14 @@ def ensure_schema_and_objects(conn):
         )
     )
 
+    # Create current view
+    logger.info(f"  Creating view: {config.DEFAULT_SCHEMA}.{CURRENT_VIEW}")
     cur.execute(
         sql.SQL(
             f"""
-            CREATE OR REPLACE VIEW {DEFAULT_SCHEMA}.{CURRENT_VIEW} AS
+            CREATE OR REPLACE VIEW {config.DEFAULT_SCHEMA}.{CURRENT_VIEW} AS
             SELECT DISTINCT ON (zillow_property_id) *
-            FROM {DEFAULT_SCHEMA}.{HISTORY_TABLE}
+            FROM {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}
             ORDER BY zillow_property_id, processed_at DESC;
         """
         )
@@ -130,105 +125,108 @@ def ensure_schema_and_objects(conn):
 
     conn.commit()
     cur.close()
+    logger.info("Schema and objects verified/created")
 
 
 def load_csv(csv_file=DEFAULT_FILE):
+    """Load transformed CSV data into PostgreSQL history table."""
+
+    logger.info("STARTING DATA LOAD TO POSTGRESQL")
+    logger.info(f"Loading file: {csv_file}")
+
     conn = get_connection()
     cur = conn.cursor()
 
     try:
+        # Ensure schema and tables exist
         ensure_schema_and_objects(conn)
 
-        df = pd.read_csv(csv_file)[ORDERED_COLS]
+        # Read CSV file
+        if not os.path.exists(csv_file):
+            logger.error(f"CSV file not found: {csv_file}")
+            raise FileNotFoundError(f"CSV file not found: {csv_file}")
 
-        # ✅ minimal cleanup only
+        df = pd.read_csv(csv_file)[ORDERED_COLS]
+        logger.info(f"Loaded {len(df)} records from CSV")
+        logger.info(f"Columns: {len(df.columns)}")
+
         df = df.where(pd.notna(df), None)
 
+        # Write to temporary file
         tmp_file = "/tmp/property_history_load.csv"
         df.to_csv(tmp_file, index=False)
-
-        logger.info("COPYing data into history table...")
-
+        logger.info(f"Created temporary file: {tmp_file}")
         with open(tmp_file, "r", encoding="utf-8") as f:
             cur.copy_expert(
-                sql.SQL(
-                    "COPY {}.{} FROM STDIN WITH CSV HEADER"
-                ).format(
-                    sql.Identifier(DEFAULT_SCHEMA),
-                    sql.Identifier(HISTORY_TABLE)
+                sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
+                    sql.Identifier(config.DEFAULT_SCHEMA), sql.Identifier(HISTORY_TABLE)
                 ),
                 f,
             )
 
         conn.commit()
-        logger.info("✅ COPY completed")
 
+        cur.execute(
+            sql.SQL("SELECT COUNT(*) FROM {}.{}").format(
+                sql.Identifier(config.DEFAULT_SCHEMA), sql.Identifier(HISTORY_TABLE)
+            )
+        )
+        total_rows = cur.fetchone()[0]
+
+        logger.info(f"COPY completed successfully")
+        logger.info(f"Total rows in history table: {total_rows}")
+
+    except FileNotFoundError as e:
+        conn.rollback()
+        logger.error(f"File not found error: {str(e)}")
+        raise
+    except psycopg2.Error as e:
+        conn.rollback()
+        logger.error(f"Database error: {str(e)}", exc_info=True)
+        raise
     except Exception as e:
         conn.rollback()
-        logger.exception("❌ Load failed")
+        logger.error(f"Unexpected error during load: {str(e)}", exc_info=True)
         raise
     finally:
         cur.close()
         conn.close()
+        logger.info("Database connection closed")
 
 
 if __name__ == "__main__":
-    # Environment detection and validation
-    is_docker = os.path.exists("/opt/airflow")
-    env_name = "Docker/Airflow" if is_docker else "Local"
-
-    logger.info(f" Running in {env_name} environment")
+    logger.info(f"RUNNING IN {config.ENV_TYPE.upper()} ENVIRONMENT")
 
     # Validate required environment variables based on environment
-    if is_docker:
-        required_vars = ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"]
-        config_info = {
-            "Host": os.getenv("POSTGRES_HOST", "postgres"),
-            "Database": os.getenv("POSTGRES_DB"),
-            "User": os.getenv("POSTGRES_USER"),
-            "Port": os.getenv("POSTGRES_PORT", "5432"),
-        }
-    else:
-        required_vars = [
-            "POSTGRES_DB_LOCAL",
-            "POSTGRES_USER_LOCAL",
-            "POSTGRES_PASSWORD_LOCAL",
-        ]
-        config_info = {
-            "Host": os.getenv("POSTGRES_HOST_LOCAL", "localhost"),
-            "Database": os.getenv("POSTGRES_DB_LOCAL"),
-            "User": os.getenv("POSTGRES_USER_LOCAL"),
-            "Port": os.getenv("POSTGRES_PORT_LOCAL", "5432"),
-        }
+    db_config = config.get_db_config()
 
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-    if missing_vars:
-        logger.error(f" Missing required environment variables: {missing_vars}")
-        logger.error("Please check your .env file")
-        exit(1)
-
-    logger.info(f" Configuration:")
-    logger.info(f" Environment: {env_name}")
-    for key, value in config_info.items():
-        logger.info(f" {key}: {value}")
-    logger.info(f" Schema: {DEFAULT_SCHEMA}")
-    logger.info(f" Table: {HISTORY_TABLE}")
-    logger.info(f" File: {DEFAULT_FILE}")
+    logger.info("\nConfiguration:")
+    logger.info(f"  Host: {db_config['host']}")
+    logger.info(f"  Database: {db_config['dbname']}")
+    logger.info(f"  User: {db_config['user']}")
+    logger.info(f"  Port: {db_config['port']}")
+    logger.info(f"  Schema: {config.DEFAULT_SCHEMA}")
+    logger.info(f"  Table: {HISTORY_TABLE}")
+    logger.info(f"  View: {CURRENT_VIEW}")
+    logger.info(f"  Input file: {DEFAULT_FILE}")
 
     try:
-        logger.info(" Testing database connection...")
         conn = get_connection()
         conn.close()
-        logger.info(" Database connection successful!")
+        logger.info("Database connection successful!\n")
 
-        logger.info(" Loading data to PostgreSQL...")
+        start_time = datetime.now()
         load_csv()
-        logger.info(" Data load completed successfully!")
+        duration = datetime.now() - start_time
+
+        logger.info("DATA LOAD COMPLETED SUCCESSFULLY")
+        logger.info(f"Duration: {duration}")
+        logger.info(f"Schema: {config.DEFAULT_SCHEMA}")
+        logger.info(f"History table: {HISTORY_TABLE}")
+        logger.info(f"Current view: {CURRENT_VIEW}")
+        logger.info("\nQuery the data with:")
 
     except Exception as e:
-        logger.error(f" Error: {e}")
-        import traceback
-
-        logger.error(f"Traceback: {traceback.format_exc()}")
+        logger.error("DATA LOAD FAILED")
+        logger.error(f"Error: {str(e)}")
         exit(1)
