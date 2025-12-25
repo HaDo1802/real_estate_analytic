@@ -30,7 +30,7 @@ jobs:
       
       - name: Run simple tests
         run: |
-          pytest tests/test_simple_*.py -v
+          pytest tests/test_*.py -v
       
       - name: Tests passed!
         run: echo "✅ All tests passed!"
