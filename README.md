@@ -168,10 +168,10 @@ ORDER BY zillow_property_id, processed_at DESC;
 ### Production-Ready Operations
 - **Automated scheduling**: Runs every 10 minutes via Airflow
 - **Email notifications**: Success/failure alerts with execution details
-- **Comprehensive logging**: Multi-level logs for debugging
+- **Comprehensive logging**: Multi-level logs for debugging, documented inside <a href="file:///Users/hado/Desktop/Career/Coding/Data%20Engineer/Project/real_estate_project/etl_log/log.txt">etl_log/log.txt</a>
 - **Environment flexibility**: Auto-detects Docker vs local execution
 - **Containerized deployment**: Docker Compose for consistent environments
-
+- **Centralize Configuration**: Leveraging modular logger and .env variables configuration, making it easier to scale and ensure safety
 ---
 
 ## 🎯 Design Decisions

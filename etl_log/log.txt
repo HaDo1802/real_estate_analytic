@@ -1,0 +1,431 @@
+2025-12-13 16:44:46 | INFO     | __main__ | Real Estate ETL Pipeline - Main Entry Point
+
+2025-12-13 16:44:46 | INFO     | email_notifier | Email notifier initialized: havando1802@gmail.com -> havando1802@gmail.com
+2025-12-13 16:44:46 | INFO     | __main__ | STARTING REAL ESTATE ETL PIPELINE
+2025-12-13 16:44:46 | INFO     | __main__ | Environment: Local | ETL Run ID: 20251213_1644
+2025-12-13 16:44:46 | INFO     | __main__ | STAGE 1: EXTRACT
+2025-12-13 16:44:46 | INFO     | extract | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-13 16:44:46 | INFO     | extract | Locations configured: 1
+2025-12-13 16:44:46 | INFO     | extract | Target locations: Las Vegas, NV
+2025-12-13 16:44:46 | INFO     | extract | Processing location: Las Vegas, NV
+2025-12-13 16:44:46 | INFO     | extract | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-13 16:44:46 | INFO     | extract | Fetching page 1 for Las Vegas, NV
+2025-12-13 16:44:48 | INFO     | extract | Page 1 fetched successfully - Properties: 41, Duration: 1.46s
+2025-12-13 16:44:48 | INFO     | extract | Fetching page 2 for Las Vegas, NV
+2025-12-13 16:44:50 | INFO     | extract | Page 2 fetched successfully - Properties: 41, Duration: 1.34s
+2025-12-13 16:44:50 | INFO     | extract | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-13 16:44:50 | INFO     | extract | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-13 16:44:52 | INFO     | extract | EXTRACTION SUMMARY
+2025-12-13 16:44:52 | INFO     | extract | Locations processed: 1
+2025-12-13 16:44:52 | INFO     | extract | Successful: 1
+2025-12-13 16:44:52 | INFO     | extract | Failed: 0
+2025-12-13 16:44:52 | INFO     | extract | Total properties fetched: 82
+2025-12-13 16:44:52 | INFO     | extract | Unique properties: 82
+2025-12-13 16:44:52 | INFO     | extract | Duplicates removed: 0
+2025-12-13 16:44:52 | INFO     | extract | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_20251213.csv
+2025-12-13 16:44:52 | INFO     | extract | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-13 16:44:52 | INFO     | __main__ | EXTRACT COMPLETED: 82 properties
+2025-12-13 16:44:52 | INFO     | __main__ | STAGE 2: TRANSFORM
+2025-12-13 16:44:52 | INFO     | transform | STARTING DATA TRANSFORMATION
+2025-12-13 16:44:52 | INFO     | transform | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-13 16:44:52 | INFO     | transform | Loaded 82 raw records
+2025-12-13 16:44:52 | INFO     | transform | Columns found: 31
+2025-12-13 16:44:52 | INFO     | transform | Step 1: Extracting address components...
+2025-12-13 16:44:52 | INFO     | transform | Address components extracted successfully
+2025-12-13 16:44:52 | INFO     | transform | Step 2: Extracting listing subtype information...
+2025-12-13 16:44:52 | INFO     | transform | Listing subtype flags extracted
+2025-12-13 16:44:52 | INFO     | transform | Step 3: Converting timestamp fields...
+2025-12-13 16:44:52 | INFO     | transform | Converted datePriceChanged to datetime
+2025-12-13 16:44:52 | INFO     | transform | Step 4: Calculating listing dates...
+2025-12-13 16:44:52 | INFO     | transform | Listing dates calculated from daysOnZillow
+2025-12-13 16:44:52 | INFO     | transform | Step 5: Normalizing lot area to square feet...
+2025-12-13 16:44:52 | INFO     | transform | Lot areas normalized to sqft
+2025-12-13 16:44:52 | INFO     | transform | Step 6: Extracting Vegas districts...
+2025-12-13 16:44:52 | INFO     | transform | Identified 4 unique districts
+2025-12-13 16:44:52 | INFO     | transform | Step 7: Removing unnecessary columns...
+2025-12-13 16:44:52 | INFO     | transform | Removed 12 unnecessary columns
+2025-12-13 16:44:52 | INFO     | transform | ETL Run ID: 20251213_1644
+2025-12-13 16:44:52 | INFO     | transform | Processed at: 2025-12-13 16:44:52
+2025-12-13 16:44:52 | INFO     | transform | All records passed essential field validation
+2025-12-13 16:44:52 | INFO     | transform | Final record count: 82
+2025-12-13 16:44:52 | INFO     | transform | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251213.csv
+2025-12-13 16:44:52 | INFO     | transform | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-13 16:44:52 | INFO     | transform | TRANSFORMATION SUMMARY
+2025-12-13 16:44:52 | INFO     | transform | Input file: raw_latest.csv
+2025-12-13 16:44:52 | INFO     | transform | Initial records: 82
+2025-12-13 16:44:52 | INFO     | transform | Final records: 82
+2025-12-13 16:44:52 | INFO     | transform | Records filtered: 0 (0.0%)
+2025-12-13 16:44:52 | INFO     | transform | ETL Run ID: 20251213_1644
+2025-12-13 16:44:52 | INFO     | transform | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-13 16:44:52 | INFO     | __main__ | TRANSFORM COMPLETED
+2025-12-13 16:44:52 | INFO     | __main__ | STAGE 3: LOAD
+2025-12-13 16:44:52 | INFO     | load | STARTING DATA LOAD TO POSTGRESQL
+2025-12-13 16:44:52 | INFO     | load | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-13 16:44:52 | INFO     | load | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-13 16:44:52 | INFO     | load | Creating schema if not exists: real_estate_data
+2025-12-13 16:44:53 | INFO     | load | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-13 16:44:53 | INFO     | load |   Creating view: real_estate_data.properties_data_current
+2025-12-13 16:44:53 | INFO     | load | Schema and objects verified/created
+2025-12-13 16:44:53 | INFO     | load | Loaded 82 records from CSV
+2025-12-13 16:44:53 | INFO     | load | Columns: 24
+2025-12-13 16:44:53 | INFO     | load | Created temporary file: /tmp/property_history_load.csv
+2025-12-13 16:44:53 | INFO     | load | COPY completed successfully
+2025-12-13 16:44:53 | INFO     | load | Total rows in history table: 410
+2025-12-13 16:44:53 | INFO     | load | Database connection closed
+2025-12-13 16:44:53 | INFO     | __main__ | LOAD COMPLETED
+2025-12-13 16:44:53 | INFO     | __main__ | 
+ETL PIPELINE COMPLETED SUCCESSFULLY
+2025-12-13 16:44:53 | INFO     | __main__ | Duration: 0:00:06 | Quality: 100.0%
+2025-12-13 16:44:53 | INFO     | __main__ | Sending success email...
+2025-12-13 16:44:53 | INFO     | email_notifier | Preparing success email notification...
+2025-12-13 16:44:53 | INFO     | email_notifier | Connecting to SMTP server: smtp.gmail.com:587
+2025-12-13 16:44:55 | INFO     | email_notifier | Email notification sent successfully to havando1802@gmail.com
+2025-12-14 14:48:34 | INFO     | __main__ | Running in Local environment
+
+2025-12-14 14:48:34 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-14 14:48:34 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-14 14:48:34 | INFO     | __main__ | Loaded 82 raw records
+2025-12-14 14:48:34 | INFO     | __main__ | Columns found: 31
+2025-12-14 14:48:34 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-14 14:48:34 | INFO     | __main__ | Address components extracted successfully
+2025-12-14 14:48:34 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-14 14:48:34 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-14 14:48:34 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-14 14:48:34 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-14 14:48:34 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-14 14:48:34 | INFO     | __main__ | Snapshot dates added
+2025-12-14 14:48:34 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-14 14:48:34 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-14 14:48:34 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-14 14:48:34 | INFO     | __main__ | Identified 4 unique districts
+2025-12-14 14:48:34 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-14 14:48:34 | INFO     | __main__ | Removed 3 unnecessary columns
+2025-12-14 14:48:34 | INFO     | __main__ | ETL Run ID: 20251214_1448
+2025-12-14 14:48:34 | INFO     | __main__ | Processed at: 2025-12-14 14:48:34
+2025-12-14 14:48:34 | INFO     | __main__ | All records passed essential field validation
+2025-12-14 14:48:34 | INFO     | __main__ | Final record count: 82
+2025-12-14 14:48:34 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
+2025-12-14 14:48:34 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 14:48:34 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-14 14:48:34 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-14 14:48:34 | INFO     | __main__ | Initial records: 82
+2025-12-14 14:48:34 | INFO     | __main__ | Final records: 82
+2025-12-14 14:48:34 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-14 14:48:34 | INFO     | __main__ | ETL Run ID: 20251214_1448
+2025-12-14 14:48:34 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-14 14:48:34 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-14 14:48:34 | INFO     | __main__ | Total duration: 0:00:00.062611
+2025-12-14 14:48:34 | INFO     | __main__ | Records transformed: 82
+2025-12-14 14:50:55 | INFO     | __main__ | Running in Local environment
+
+2025-12-14 14:50:55 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-14 14:50:55 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-14 14:50:55 | INFO     | __main__ | Loaded 82 raw records
+2025-12-14 14:50:55 | INFO     | __main__ | Columns found: 31
+2025-12-14 14:50:55 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-14 14:50:55 | INFO     | __main__ | Address components extracted successfully
+2025-12-14 14:50:55 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-14 14:50:55 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-14 14:50:55 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-14 14:50:55 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-14 14:50:55 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-14 14:50:55 | INFO     | __main__ | Snapshot dates added
+2025-12-14 14:50:55 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-14 14:50:55 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-14 14:50:55 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-14 14:50:55 | INFO     | __main__ | Identified 4 unique districts
+2025-12-14 14:50:55 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-14 14:50:55 | INFO     | __main__ | Removed 6 unnecessary columns
+2025-12-14 14:50:55 | INFO     | __main__ | ETL Run ID: 20251214_1450
+2025-12-14 14:50:55 | INFO     | __main__ | Processed at: 2025-12-14 14:50:55
+2025-12-14 14:50:55 | INFO     | __main__ | All records passed essential field validation
+2025-12-14 14:50:55 | INFO     | __main__ | Final record count: 82
+2025-12-14 14:50:55 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
+2025-12-14 14:50:55 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 14:50:55 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-14 14:50:55 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-14 14:50:55 | INFO     | __main__ | Initial records: 82
+2025-12-14 14:50:55 | INFO     | __main__ | Final records: 82
+2025-12-14 14:50:55 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-14 14:50:55 | INFO     | __main__ | ETL Run ID: 20251214_1450
+2025-12-14 14:50:55 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-14 14:50:55 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-14 14:50:55 | INFO     | __main__ | Total duration: 0:00:00.061385
+2025-12-14 14:50:55 | INFO     | __main__ | Records transformed: 82
+2025-12-14 14:51:45 | INFO     | __main__ | Running in Local environment
+
+2025-12-14 14:51:45 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-14 14:51:45 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-14 14:51:45 | INFO     | __main__ | Loaded 82 raw records
+2025-12-14 14:51:45 | INFO     | __main__ | Columns found: 31
+2025-12-14 14:51:45 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-14 14:51:45 | INFO     | __main__ | Address components extracted successfully
+2025-12-14 14:51:45 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-14 14:51:45 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-14 14:51:45 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-14 14:51:45 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-14 14:51:45 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-14 14:51:45 | INFO     | __main__ | Snapshot dates added
+2025-12-14 14:51:45 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-14 14:51:45 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-14 14:51:45 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-14 14:51:45 | INFO     | __main__ | Identified 4 unique districts
+2025-12-14 14:51:45 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-14 14:51:45 | INFO     | __main__ | Removed 6 unnecessary columns
+2025-12-14 14:51:45 | INFO     | __main__ | ETL Run ID: 20251214_1451
+2025-12-14 14:51:45 | INFO     | __main__ | Processed at: 2025-12-14 14:51:45
+2025-12-14 14:51:45 | INFO     | __main__ | All records passed essential field validation
+2025-12-14 14:51:45 | INFO     | __main__ | Final record count: 82
+2025-12-14 14:51:45 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
+2025-12-14 14:51:45 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 14:51:45 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-14 14:51:45 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-14 14:51:45 | INFO     | __main__ | Initial records: 82
+2025-12-14 14:51:45 | INFO     | __main__ | Final records: 82
+2025-12-14 14:51:45 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-14 14:51:45 | INFO     | __main__ | ETL Run ID: 20251214_1451
+2025-12-14 14:51:45 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-14 14:51:45 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-14 14:51:45 | INFO     | __main__ | Total duration: 0:00:00.064786
+2025-12-14 14:51:45 | INFO     | __main__ | Records transformed: 82
+2025-12-14 14:58:17 | INFO     | __main__ | Running in Local environment
+
+2025-12-14 14:58:17 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-14 14:58:17 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-14 14:58:17 | INFO     | __main__ | Loaded 82 raw records
+2025-12-14 14:58:17 | INFO     | __main__ | Columns found: 31
+2025-12-14 14:58:17 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-14 14:58:17 | INFO     | __main__ | Address components extracted successfully
+2025-12-14 14:58:17 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-14 14:58:17 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-14 14:58:17 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-14 14:58:17 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-14 14:58:17 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-14 14:58:17 | INFO     | __main__ | Snapshot dates added
+2025-12-14 14:58:17 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-14 14:58:17 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-14 14:58:17 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-14 14:58:17 | INFO     | __main__ | Identified 4 unique districts
+2025-12-14 14:58:17 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-14 14:58:17 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-14 14:58:17 | INFO     | __main__ | ETL Run ID: 20251214_1458
+2025-12-14 14:58:17 | INFO     | __main__ | Processed at: 2025-12-14 14:58:17
+2025-12-14 14:58:17 | INFO     | __main__ | All records passed essential field validation
+2025-12-14 14:58:17 | INFO     | __main__ | Final record count: 82
+2025-12-14 14:58:17 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
+2025-12-14 14:58:17 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 14:58:17 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-14 14:58:17 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-14 14:58:17 | INFO     | __main__ | Initial records: 82
+2025-12-14 14:58:17 | INFO     | __main__ | Final records: 82
+2025-12-14 14:58:17 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-14 14:58:17 | INFO     | __main__ | ETL Run ID: 20251214_1458
+2025-12-14 14:58:17 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-14 14:58:17 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-14 14:58:17 | INFO     | __main__ | Total duration: 0:00:00.045227
+2025-12-14 14:58:17 | INFO     | __main__ | Records transformed: 82
+2025-12-14 15:00:49 | INFO     | __main__ | Running in Local environment
+
+2025-12-14 15:00:49 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-14 15:00:49 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
+2025-12-14 15:00:49 | INFO     | __main__ | Loaded 82 raw records
+2025-12-14 15:00:49 | INFO     | __main__ | Columns found: 31
+2025-12-14 15:00:49 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-14 15:00:49 | INFO     | __main__ | Address components extracted successfully
+2025-12-14 15:00:49 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-14 15:00:49 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-14 15:00:49 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-14 15:00:49 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-14 15:00:49 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-14 15:00:49 | INFO     | __main__ | Snapshot dates added
+2025-12-14 15:00:49 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-14 15:00:49 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-14 15:00:49 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-14 15:00:49 | INFO     | __main__ | Identified 4 unique districts
+2025-12-14 15:00:49 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-14 15:00:49 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-14 15:00:49 | INFO     | __main__ | ETL Run ID: 20251214_1500
+2025-12-14 15:00:49 | INFO     | __main__ | Processed at: 2025-12-14 15:00:49
+2025-12-14 15:00:49 | INFO     | __main__ | All records passed essential field validation
+2025-12-14 15:00:49 | INFO     | __main__ | Final record count: 82
+2025-12-14 15:00:49 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
+2025-12-14 15:00:49 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:00:49 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-14 15:00:49 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-14 15:00:49 | INFO     | __main__ | Initial records: 82
+2025-12-14 15:00:49 | INFO     | __main__ | Final records: 82
+2025-12-14 15:00:49 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-14 15:00:49 | INFO     | __main__ | ETL Run ID: 20251214_1500
+2025-12-14 15:00:49 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
+2025-12-14 15:00:49 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-14 15:00:49 | INFO     | __main__ | Total duration: 0:00:00.044889
+2025-12-14 15:00:49 | INFO     | __main__ | Records transformed: 82
+2025-12-14 15:06:44 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
+2025-12-14 15:06:44 | INFO     | __main__ | 
+Configuration:
+2025-12-14 15:06:44 | INFO     | __main__ |   Host: localhost
+2025-12-14 15:06:44 | INFO     | __main__ |   Database: zillow_api
+2025-12-14 15:06:44 | INFO     | __main__ |   User: postgres
+2025-12-14 15:06:44 | INFO     | __main__ |   Port: 5432
+2025-12-14 15:06:44 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-14 15:06:44 | INFO     | __main__ |   Table: properties_data_history
+2025-12-14 15:06:44 | INFO     | __main__ |   View: properties_data_current
+2025-12-14 15:06:44 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:06:44 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:06:44 | INFO     | __main__ | Database connection successful!
+
+2025-12-14 15:06:44 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-14 15:06:44 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:06:44 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:06:44 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-14 15:06:44 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-14 15:06:44 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
+2025-12-14 15:06:44 | INFO     | __main__ | Schema and objects verified/created
+2025-12-14 15:06:44 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-14 15:06:44 | INFO     | __main__ | Columns: 28
+2025-12-14 15:06:44 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-14 15:06:44 | ERROR    | __main__ | Database error: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+Traceback (most recent call last):
+  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 180, in load_csv
+    cur.copy_expert(
+    ~~~~~~~~~~~~~~~^
+        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        f,
+        ^^
+    )
+    ^
+psycopg2.errors.BadCopyFileFormat: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+
+2025-12-14 15:06:44 | INFO     | __main__ | Database connection closed
+2025-12-14 15:06:44 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-14 15:06:44 | ERROR    | __main__ | Error: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+
+2025-12-14 15:10:41 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
+2025-12-14 15:10:41 | INFO     | __main__ | 
+Configuration:
+2025-12-14 15:10:41 | INFO     | __main__ |   Host: localhost
+2025-12-14 15:10:41 | INFO     | __main__ |   Database: zillow_api
+2025-12-14 15:10:41 | INFO     | __main__ |   User: postgres
+2025-12-14 15:10:41 | INFO     | __main__ |   Port: 5432
+2025-12-14 15:10:41 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-14 15:10:41 | INFO     | __main__ |   Table: properties_data_history
+2025-12-14 15:10:41 | INFO     | __main__ |   View: properties_data_current
+2025-12-14 15:10:41 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:10:41 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:10:41 | INFO     | __main__ | Database connection successful!
+
+2025-12-14 15:10:41 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-14 15:10:41 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:10:41 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:10:41 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-14 15:10:41 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-14 15:10:41 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
+2025-12-14 15:10:41 | INFO     | __main__ | Schema and objects verified/created
+2025-12-14 15:10:41 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-14 15:10:41 | INFO     | __main__ | Columns: 27
+2025-12-14 15:10:41 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-14 15:10:41 | ERROR    | __main__ | Database error: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+Traceback (most recent call last):
+  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 178, in load_csv
+    cur.copy_expert(
+    ~~~~~~~~~~~~~~~^
+        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        f,
+        ^^
+    )
+    ^
+psycopg2.errors.BadCopyFileFormat: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+
+2025-12-14 15:10:41 | INFO     | __main__ | Database connection closed
+2025-12-14 15:10:41 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-14 15:10:41 | ERROR    | __main__ | Error: missing data for column "loaded_at"
+CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
+
+2025-12-14 15:11:42 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
+2025-12-14 15:11:42 | INFO     | __main__ | 
+Configuration:
+2025-12-14 15:11:42 | INFO     | __main__ |   Host: localhost
+2025-12-14 15:11:42 | INFO     | __main__ |   Database: zillow_api
+2025-12-14 15:11:42 | INFO     | __main__ |   User: postgres
+2025-12-14 15:11:42 | INFO     | __main__ |   Port: 5432
+2025-12-14 15:11:42 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-14 15:11:42 | INFO     | __main__ |   Table: properties_data_history
+2025-12-14 15:11:42 | INFO     | __main__ |   View: properties_data_current
+2025-12-14 15:11:42 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:11:42 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:11:42 | INFO     | __main__ | Database connection successful!
+
+2025-12-14 15:11:42 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-14 15:11:42 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:11:42 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:11:42 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-14 15:11:42 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-14 15:11:42 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
+2025-12-14 15:11:42 | INFO     | __main__ | Schema and objects verified/created
+2025-12-14 15:11:42 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-14 15:11:42 | INFO     | __main__ | Columns: 27
+2025-12-14 15:11:42 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-14 15:11:42 | ERROR    | __main__ | Database error: invalid input syntax for type bigint: "-129410.0"
+CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
+Traceback (most recent call last):
+  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 178, in load_csv
+    cur.copy_expert(
+    ~~~~~~~~~~~~~~~^
+        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        f,
+        ^^
+    )
+    ^
+psycopg2.errors.InvalidTextRepresentation: invalid input syntax for type bigint: "-129410.0"
+CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
+
+2025-12-14 15:11:42 | INFO     | __main__ | Database connection closed
+2025-12-14 15:11:42 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-14 15:11:42 | ERROR    | __main__ | Error: invalid input syntax for type bigint: "-129410.0"
+CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
+
+2025-12-14 15:13:24 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
+2025-12-14 15:13:24 | INFO     | __main__ | 
+Configuration:
+2025-12-14 15:13:24 | INFO     | __main__ |   Host: localhost
+2025-12-14 15:13:24 | INFO     | __main__ |   Database: zillow_api
+2025-12-14 15:13:24 | INFO     | __main__ |   User: postgres
+2025-12-14 15:13:24 | INFO     | __main__ |   Port: 5432
+2025-12-14 15:13:24 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-14 15:13:24 | INFO     | __main__ |   Table: properties_data_history
+2025-12-14 15:13:24 | INFO     | __main__ |   View: properties_data_current
+2025-12-14 15:13:24 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:13:24 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:13:24 | INFO     | __main__ | Database connection successful!
+
+2025-12-14 15:13:24 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-14 15:13:24 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-14 15:13:24 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-14 15:13:24 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-14 15:13:24 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-14 15:13:24 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
+2025-12-14 15:13:24 | INFO     | __main__ | Schema and objects verified/created
+2025-12-14 15:13:24 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-14 15:13:24 | INFO     | __main__ | Columns: 27
+2025-12-14 15:13:24 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-14 15:13:24 | INFO     | __main__ | COPY completed successfully
+2025-12-14 15:13:24 | INFO     | __main__ | Total rows in history table: 82
+2025-12-14 15:13:24 | INFO     | __main__ | Database connection closed
+2025-12-14 15:13:24 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
+2025-12-14 15:13:24 | INFO     | __main__ | Duration: 0:00:00.094047
+2025-12-14 15:13:24 | INFO     | __main__ | Schema: real_estate_data
+2025-12-14 15:13:24 | INFO     | __main__ | History table: properties_data_history
+2025-12-14 15:13:24 | INFO     | __main__ | Current view: properties_data_current
+2025-12-14 15:13:24 | INFO     | __main__ | 
+Query the data with:

@@ -1,0 +1,77 @@
+# Flake8 Configuration File
+#
+# WHAT: Configuration for flake8 Python linter
+# WHY: Enforce consistent code style and catch common errors
+# HOW: Flake8 reads this file to know what to check
+
+[flake8]
+# WHAT: Maximum line length
+# WHY: Longer lines are harder to read
+# HOW: Warnings for lines exceeding this length
+max-line-length = 127
+
+# WHAT: Files and directories to exclude from linting
+# WHY: Don't lint generated files, dependencies, or build artifacts
+# HOW: These paths are skipped during linting
+exclude =
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .venv,
+    venv,
+    env,
+    ENV,
+    build,
+    dist,
+    *.egg-info,
+    .eggs,
+    .tox,
+    migrations,
+    postgres-data,
+    logs,
+    data
+
+# WHAT: Specific error codes to ignore
+# WHY: Some rules are too strict or conflict with other tools
+# HOW: These codes won't trigger warnings
+# 
+# E203: Whitespace before ':' (conflicts with Black)
+# W503: Line break before binary operator (conflicts with Black)
+# E501: Line too long (handled by max-line-length)
+ignore = E203, W503
+
+# WHAT: Select which error codes to check
+# WHY: Focus on important issues
+# HOW: Only these categories are checked
+#
+# E: PEP 8 errors
+# W: PEP 8 warnings
+# F: PyFlakes errors (undefined names, unused imports)
+# C: McCabe complexity
+select = E,W,F,C
+
+# WHAT: Maximum cyclomatic complexity
+# WHY: Complex functions are hard to understand and test
+# HOW: Warning if function complexity exceeds this value
+# EXPLANATION: Complexity measures how many paths through your code exist
+#              10 means max 10 different paths (if statements, loops, etc.)
+max-complexity = 10
+
+# WHAT: Show source code for each error
+# WHY: Easier to understand and fix issues
+show-source = True
+
+# WHAT: Show statistics at the end
+# WHY: See overall code quality metrics
+statistics = True
+
+# WHAT: Count errors by type
+# WHY: Identify most common issues
+count = True
+
+# WHAT: Per-file ignores
+# WHY: Some files need specific exceptions
+# HOW: Format is "filename:error_code"
+per-file-ignores =
+    __init__.py:F401
+    tests/*:F401,F811

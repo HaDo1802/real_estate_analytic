@@ -1,0 +1,96 @@
+name: Simple CI/CD Test (Beginner)
+
+# Trigger on push to any branch
+on:
+  push:
+    branches: [main, develop, test]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ============================================================================
+  # JOB 1: Run Simple Tests
+  # ============================================================================
+  test:
+    name: Run Simple Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install pandas pytest
+      
+      - name: Run simple tests
+        run: |
+          pytest tests/test_simple_*.py -v
+      
+      - name: Tests passed!
+        run: echo "✅ All tests passed!"
+
+  # ============================================================================
+  # JOB 2: Check Code Format (Optional)
+  # ============================================================================
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      
+      - name: Install linting tools
+        run: |
+          pip install black flake8
+      
+      - name: Check with flake8
+        run: |
+          # Just check etl folder, allow long lines
+          flake8 etl/ --max-line-length=127 --extend-ignore=E203,W503
+        continue-on-error: true  # Don't fail on linting errors yet
+
+  # ============================================================================
+  # JOB 3: Build Docker Image (Needs Docker Hub secrets)
+  # ============================================================================
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [test]  # Only run if tests pass
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # Skip login if running on PR (no secrets available)
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          # Only push if not a PR and secrets exist
+          push: ${{ github.event_name != 'pull_request' && secrets.DOCKER_USERNAME != '' }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/real-estate-etl:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

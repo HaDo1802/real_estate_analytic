@@ -27,30 +27,39 @@ CURRENT_VIEW = "properties_data_current"
 
 ORDERED_COLS = [
     "zillow_property_id",
-    "street_address",
-    "city",
-    "vegas_district",
-    "zip_code",
-    "latitude",
-    "longitude",
-    "livingArea",
-    "Normalized_lotAreaValue",
-    "bathrooms",
-    "bedrooms",
+    "snapshot_date",
+
     "price",
+    "priceChange",
+    "bedrooms",
+    "bathrooms",
+    "livingArea",
+    "lotAreaValue",
+    "Normalized_lotAreaValue",
+    "propertyType",
+    "listingStatus",
+
     "rentZestimate",
     "zestimate",
-    "propertyType",
-    "Unit",
+
+    "street_address",
+    "city",
+    "state",
+    "zip_code",
+    "vegas_district",
+    "latitude",
+    "longitude",
+
     "daysOnZillow",
-    "date_listing",
-    "datePriceChanged",
-    "listingStatus",
+    "has3DModel",
+    "hasImage",
+    "hasVideo",
     "is_fsba",
     "is_open_house",
-    "processed_at",
-    "etl_run_id",
+
+    "extracted_at"
 ]
+
 
 
 def get_connection():
@@ -78,37 +87,46 @@ def ensure_schema_and_objects(conn):
     # Create history table
     logger.info(f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}")
     cur.execute(
-        sql.SQL(
-            f"""
-            CREATE TABLE IF NOT EXISTS {config.DEFAULT_SCHEMA}.{HISTORY_TABLE} (
-                zillow_property_id BIGINT,
-                street_address TEXT,
-                city TEXT,
-                vegas_district TEXT,
-                zip_code TEXT,
-                latitude DOUBLE PRECISION,
-                longitude DOUBLE PRECISION,
-                livingArea DOUBLE PRECISION,
-                Normalized_lotAreaValue DOUBLE PRECISION,
-                bathrooms DOUBLE PRECISION,
-                bedrooms INTEGER,
-                price BIGINT,
-                rentZestimate DOUBLE PRECISION,
-                zestimate DOUBLE PRECISION,
-                propertyType TEXT,
-                Unit TEXT,
-                daysOnZillow INTEGER,
-                date_listing TIMESTAMPTZ,
-                datePriceChanged TIMESTAMPTZ,
-                listingStatus TEXT,
-                is_fsba BOOLEAN,
-                is_open_house BOOLEAN,
-                processed_at TIMESTAMPTZ NOT NULL,
-                etl_run_id TEXT NOT NULL
-            );
+    sql.SQL(
+        f"""
+        CREATE TABLE IF NOT EXISTS {config.DEFAULT_SCHEMA}.{HISTORY_TABLE} (
+            zillow_property_id BIGINT,
+            snapshot_date DATE,
+
+            price DOUBLE PRECISION,
+            priceChange DOUBLE PRECISION,
+            bedrooms INTEGER,
+            bathrooms DOUBLE PRECISION,
+            livingArea DOUBLE PRECISION,
+            lotAreaValue DOUBLE PRECISION,
+            Normalized_lotAreaValue DOUBLE PRECISION,
+            propertyType TEXT,
+            listingStatus TEXT,
+
+            rentZestimate DOUBLE PRECISION,
+            zestimate DOUBLE PRECISION,
+
+            street_address TEXT,
+            city TEXT,
+            state TEXT,
+            zip_code TEXT,
+            vegas_district TEXT,
+            latitude DOUBLE PRECISION,
+            longitude DOUBLE PRECISION,
+
+            daysOnZillow INTEGER,
+            has3DModel BOOLEAN,
+            hasImage BOOLEAN,
+            hasVideo BOOLEAN,
+            is_fsba BOOLEAN,
+            is_open_house BOOLEAN,
+
+            extracted_at TIMESTAMPTZ,
+            loaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
         """
-        )
     )
+)
 
     # Create current view
     logger.info(f"  Creating view: {config.DEFAULT_SCHEMA}.{CURRENT_VIEW}")
@@ -118,7 +136,7 @@ def ensure_schema_and_objects(conn):
             CREATE OR REPLACE VIEW {config.DEFAULT_SCHEMA}.{CURRENT_VIEW} AS
             SELECT DISTINCT ON (zillow_property_id) *
             FROM {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}
-            ORDER BY zillow_property_id, processed_at DESC;
+            ORDER BY zillow_property_id, snapshot_date DESC;
         """
         )
     )
@@ -151,7 +169,7 @@ def load_csv(csv_file=DEFAULT_FILE):
         logger.info(f"Columns: {len(df.columns)}")
 
         df = df.where(pd.notna(df), None)
-
+        df['loaded_at'] = datetime.now()
         # Write to temporary file
         tmp_file = "/tmp/property_history_load.csv"
         df.to_csv(tmp_file, index=False)

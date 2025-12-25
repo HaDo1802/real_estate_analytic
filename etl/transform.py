@@ -37,17 +37,6 @@ def extract_address_components(address: str) -> dict:
     }
 
 
-def calculate_date_listing(daysOnZillow) -> datetime:
-    """Calculate listing date from days on Zillow."""
-    if pd.isna(daysOnZillow):
-        return None
-    try:
-        days = int(daysOnZillow)
-        update_date = (datetime.now(timezone.utc) - pd.Timedelta(days=days)).date()
-        return update_date
-    except Exception:
-        return None
-
 
 def convert_unix_timestamp(timestamp_value) -> datetime:
     """Convert Unix timestamp (in milliseconds) to datetime."""
@@ -209,16 +198,11 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
                 )
                 logger.info(f"Converted {field} to datetime")
 
-        # Add date_listing column
-        logger.info("Step 4: Calculating listing dates...")
-        if "daysOnZillow" in df_transformed.columns:
-            df_transformed["date_listing"] = df_transformed["daysOnZillow"].apply(
-                calculate_date_listing
-            )
-            logger.info("Listing dates calculated from daysOnZillow")
-        else:
-            df_transformed["date_listing"] = None
-            logger.warning("'daysOnZillow' column not found")
+        # Add snapshot column
+        logger.info("Step 4: Add snapshot dates...")
+        current_date = datetime.now(timezone.utc).date().strftime("%Y%m%d")
+        df_transformed["snapshot_date"] = current_date
+        logger.info("Snapshot dates added")
 
         # Normalize lot area to sqft
         logger.info("Step 5: Normalizing lot area to square feet...")
@@ -250,61 +234,21 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         # Remove unnecessary columns
         logger.info("Step 7: Removing unnecessary columns...")
         columns_to_delete = [
-            "has3DModel",
-            "comingSoonOnMarketDate",
-            "contingentListingType",
-            "detailUrl",
-            "hasImage",
-            "hasVideo",
-            "imgSrc",
-            "carouselPhotos",
-            "ImgSrc",
             "variableData",
             "currency",
-            "newConstructionType",
-            "listingSubType",
             "Country",
             "lotAreaUnit",
+            "imgSrc",
+            "carouselPhotos",
+            "listingSubType",
+            "detailUrl"
         ]
         deleted_cols = [col for col in columns_to_delete if col in df_final.columns]
         df_final.drop(columns=deleted_cols, inplace=True)
         logger.info(f"Removed {len(deleted_cols)} unnecessary columns")
 
-        # Reorder columns
-        ordered_cols = [
-            "zillow_property_id",
-            "street_address",
-            "city",
-            "vegas_district",
-            "zip_code",
-            "latitude",
-            "longitude",
-            "livingArea",
-            "Normalized_lotAreaValue",
-            "bathrooms",
-            "bedrooms",
-            "price",
-            "rentZestimate",
-            "zestimate",
-            "propertyType",
-            "Unit",
-            "daysOnZillow",
-            "date_listing",
-            "datePriceChanged",
-            "listingStatus",
-            "is_fsba",
-            "is_open_house",
-            "processed_at",
-            "etl_run_id",
-        ]
-        df_final = df_final.reindex(columns=ordered_cols)
 
         current_time = datetime.now()
-        df_final["processed_at"] = current_time
-        etl_run_id = current_time.strftime("%Y%m%d_%H%M")
-        df_final["etl_run_id"] = etl_run_id
-
-        logger.info(f"ETL Run ID: {etl_run_id}")
         logger.info(f"Processed at: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
         
         essential_fields = ["zillow_property_id", "price"]

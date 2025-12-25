@@ -1,24 +1,11 @@
-# =======================================
-# SENSITIVE FILES - NEVER COMMIT!
-# =======================================
 
-.env.*
-*.env
-.env.local
-.env.production
-.env.development
+*.env*
 
-# =======================================
-# PYTHON & RUNTIME FILES
-# =======================================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# =======================================
-# DATA & DATABASES
-# =======================================
 data/
 *.csv
 *.xlsx
@@ -28,39 +15,19 @@ data/
 *.sqlite3
 postgres-data/
 
-# =======================================
-# LOGS & RUNTIME
-# =======================================
 logs/
 *.log
 
-# =======================================
-# IDE & SYSTEM FILES
-# =======================================
 .vscode/
 .DS_Store
 *.swp
 *.swo
 
-# =======================================
-# DOCKER & CONTAINERS
-# =======================================
+
 .docker/
 docker-compose.override.yml
 
-# =======================================
-# SECRETS & CREDENTIALS
-# =======================================
-*secret*
-*credential*
-*password*
-*.key
-*.pem
-*.p12
-*.pfx
 
 
 learning_note.txt
-vegas_dashboard.py
-
 notebook.ipynb
