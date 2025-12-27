@@ -6,13 +6,11 @@ on:
     branches: [main, develop, test]
   pull_request:
     branches: [main]
-
+env:
+  PYTHON_VERSION: '3.9'
 jobs:
-  # ============================================================================
-  # JOB 1: Run Simple Tests
-  # ============================================================================
   test:
-    name: Run Simple Tests
+    name: Run Tests
     runs-on: ubuntu-latest
     
     steps:
@@ -22,22 +20,20 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: ${{ env.PYTHON_VERSION }}
       
       - name: Install dependencies
         run: |
           pip install pandas pytest
       
-      - name: Run simple tests
+      - name: Run tests
         run: |
           pytest tests/test_*.py -v
       
       - name: Tests passed!
         run: echo "✅ All tests passed!"
 
-  # ============================================================================
-  # JOB 2: Check Code Format (Optional)
-  # ============================================================================
+  
   lint:
     name: Code Quality
     runs-on: ubuntu-latest

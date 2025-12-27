@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 import sys
 from logger import get_logger
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 from utils.config import config
@@ -12,6 +13,7 @@ from utils.config import config
 logger = get_logger(__name__)
 
 LOCATIONS = ["Las Vegas, NV"]
+
 
 def fetch_zillow(location, max_pages=2):
     """Fetch property listings from Zillow API for a specific location."""
@@ -27,9 +29,11 @@ def fetch_zillow(location, max_pages=2):
     url = "https://us-housing-market-data1.p.rapidapi.com/propertyExtendedSearch"
     all_props = []
     page = 1
-    
-    logger.info(f"Starting extraction for location: {location} (max_pages: {max_pages})")
-    
+
+    logger.info(
+        f"Starting extraction for location: {location} (max_pages: {max_pages})"
+    )
+
     try:
         while page <= max_pages:
             params = {
@@ -53,7 +57,9 @@ def fetch_zillow(location, max_pages=2):
             json_data = res.json()
 
             if not json_data or "props" not in json_data:
-                logger.warning(f"No property data in response for {location} page {page}")
+                logger.warning(
+                    f"No property data in response for {location} page {page}"
+                )
                 break
 
             props = json_data["props"]
@@ -113,7 +119,7 @@ def fetch_all_locations():
     failed_locations = 0
 
     for loc in LOCATIONS:
-        logger.info(f"Processing location: {loc}")        
+        logger.info(f"Processing location: {loc}")
         try:
             df_result = fetch_zillow(loc)
 
@@ -164,7 +170,9 @@ def fetch_all_locations():
     os.makedirs(raw_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d")
     raw_timestamped = os.path.join(raw_dir, f"raw_{timestamp}.csv")
-    df_combined.to_csv(raw_timestamped, index=False) # Consider using Polars for optimizing large files
+    df_combined.to_csv(
+        raw_timestamped, index=False
+    )  # Consider using Polars for optimizing large files
     logger.info(f"Saved timestamped file: {raw_timestamped}")
 
     # Save latest file (for transform script to read)
@@ -192,7 +200,7 @@ if __name__ == "__main__":
             status_counts = df_result["homeStatus"].value_counts()
             for status, count in status_counts.items():
                 logger.info(f"  {status}: {count}")
-        
+
         logger.info("=" * 70)
     else:
         logger.error("\n" + "=" * 70)

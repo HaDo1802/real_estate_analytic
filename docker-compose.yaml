@@ -46,8 +46,9 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./etl:/opt/airflow/etl
+    - ./utils:/opt/airflow/utils
     - ./data:/opt/airflow/data
-
+    - ./etl_log:/opt/airflow/etl_log
     
     # - ./dbt:/opt/airflow/dbt
     # - /var/run/docker.sock:/var/run/docker.sock

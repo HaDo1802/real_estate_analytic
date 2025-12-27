@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from datetime import datetime, timezone
 from logger import get_logger
+
 logger = get_logger(__name__)
 
 DEFAULT_INPUT = os.path.abspath(
@@ -11,12 +12,14 @@ DEFAULT_INPUT = os.path.abspath(
 DEFAULT_OUTPUT_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "data", "transformed")
 )
+
+
 def extract_address_components(address: str) -> dict:
     """Extract street, city, state, zip from address string."""
     if not address or pd.isna(address):
         return {"street_address": None, "city": None, "state": None, "zip_code": None}
     parts = address.split(", ")
-    
+
     if len(parts) >= 3:
         street_address = parts[0]
         city = parts[1]
@@ -35,7 +38,6 @@ def extract_address_components(address: str) -> dict:
         "state": state,
         "zip_code": zip_code,
     }
-
 
 
 def convert_unix_timestamp(timestamp_value) -> datetime:
@@ -133,7 +135,7 @@ def extract_vegas_district(address: str, city: str) -> str:
 
 def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
     """Main transformation function to clean and enrich raw property data."""
-    
+
     try:
         logger.info("STARTING DATA TRANSFORMATION")
         logger.info(f"Reading input file: {input_file}")
@@ -241,21 +243,20 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
             "imgSrc",
             "carouselPhotos",
             "listingSubType",
-            "detailUrl"
+            "detailUrl",
         ]
         deleted_cols = [col for col in columns_to_delete if col in df_final.columns]
         df_final.drop(columns=deleted_cols, inplace=True)
         logger.info(f"Removed {len(deleted_cols)} unnecessary columns")
 
-
         current_time = datetime.now()
         logger.info(f"Processed at: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        
+
         essential_fields = ["zillow_property_id", "price"]
         before_filter = len(df_final)
         df_final = df_final.dropna(subset=essential_fields)
         removed_count = before_filter - len(df_final)
-        
+
         if removed_count > 0:
             logger.warning(
                 f"Removed {removed_count} records with missing critical fields"
@@ -280,8 +281,9 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         logger.info(f"Input file: {os.path.basename(input_file)}")
         logger.info(f"Initial records: {initial_count}")
         logger.info(f"Final records: {final_count}")
-        logger.info(f"Records filtered: {initial_count - final_count} ({(initial_count - final_count)/initial_count*100:.1f}%)")
-        logger.info(f"ETL Run ID: {etl_run_id}")
+        logger.info(
+            f"Records filtered: {initial_count - final_count} ({(initial_count - final_count)/initial_count*100:.1f}%)"
+        )
         logger.info(f"Output directory: {output_dir}")
 
         return df_final, timestamped_file, latest_file
@@ -299,7 +301,7 @@ if __name__ == "__main__":
     env_name = "Docker/Airflow" if is_docker else "Local"
     logger.info(f"Running in {env_name} environment\n")
     try:
-        start_time = datetime.now()  
+        start_time = datetime.now()
         df_transformed, timestamped_path, latest_path = main_transform()
         duration = datetime.now() - start_time
         logger.info("TRANSFORMATION COMPLETED SUCCESSFULLY")

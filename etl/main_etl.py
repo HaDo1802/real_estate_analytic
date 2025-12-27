@@ -12,6 +12,7 @@ from email_notifier import EmailNotifier
 
 logger = get_logger(__name__)
 
+
 def get_base_paths():
     if os.path.exists("/opt/airflow"):
         base_dir = "/opt/airflow"
@@ -35,7 +36,7 @@ def run_etl_pipeline():
     etl_run_id = start_time.strftime("%Y%m%d_%H%M")
     base_dir, raw_dir, transformed_dir = get_base_paths()
     env_type = "Docker/Airflow" if os.path.exists("/opt/airflow") else "Local"
-    
+
     logger.info(f"Environment: {env_type} | ETL Run ID: {etl_run_id}")
 
     details = {
@@ -51,7 +52,7 @@ def run_etl_pipeline():
             details["error"] = "No data extracted from API"
             details["failed_step"] = "EXTRACT"
             return False, details
-        
+
         details["properties_extracted"] = len(df_extracted)
         logger.info(f"EXTRACT COMPLETED: {len(df_extracted)} properties")
 
@@ -78,10 +79,12 @@ def run_etl_pipeline():
         duration = end_time - start_time
 
         details["end_time"] = end_time.strftime("%Y-%m-%d %H:%M:%S")
-        details["duration"] = str(duration).split('.')[0]
+        details["duration"] = str(duration).split(".")[0]
         details["quality_rate"] = f"{len(df_transformed)/len(df_extracted)*100:.1f}%"
         logger.info("ETL PIPELINE COMPLETED SUCCESSFULLY")
-        logger.info(f"Duration: {details['duration']} | Quality: {details['quality_rate']}")
+        logger.info(
+            f"Duration: {details['duration']} | Quality: {details['quality_rate']}"
+        )
         return True, details
 
     except Exception as e:
@@ -96,10 +99,10 @@ if __name__ == "__main__":
 
     email_notifier = EmailNotifier()
     pipeline_start = datetime.now()
-    
+
     success, details = run_etl_pipeline()
-    
-    details["total_execution_time"] = str(datetime.now() - pipeline_start).split('.')[0]
+
+    details["total_execution_time"] = str(datetime.now() - pipeline_start).split(".")[0]
 
     if success:
         logger.info("Sending success email...")

@@ -5,6 +5,8 @@ import psycopg2
 from psycopg2 import sql
 from datetime import datetime
 from logger import get_logger
+import datetime as dt
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 from utils.config import config
@@ -23,12 +25,10 @@ DEFAULT_FILE = os.path.abspath(
 )
 
 HISTORY_TABLE = "properties_data_history"
-CURRENT_VIEW = "properties_data_current"
 
 ORDERED_COLS = [
     "zillow_property_id",
     "snapshot_date",
-
     "price",
     "priceChange",
     "bedrooms",
@@ -38,10 +38,8 @@ ORDERED_COLS = [
     "Normalized_lotAreaValue",
     "propertyType",
     "listingStatus",
-
     "rentZestimate",
     "zestimate",
-
     "street_address",
     "city",
     "state",
@@ -49,29 +47,26 @@ ORDERED_COLS = [
     "vegas_district",
     "latitude",
     "longitude",
-
     "daysOnZillow",
     "has3DModel",
     "hasImage",
     "hasVideo",
     "is_fsba",
     "is_open_house",
-
-    "extracted_at"
+    "extracted_at",
 ]
-
 
 
 def get_connection():
     """Connect to Postgres using config with environment auto-detection."""
-    
+
     db_config = config.get_db_config()
     logger.info(
         f"Connecting to PostgreSQL ({config.ENV_TYPE}): "
         f"{db_config['host']}:{db_config['port']}/{db_config['dbname']} "
         f"as {db_config['user']}"
     )
-    
+
     return psycopg2.connect(**db_config)
 
 
@@ -81,14 +76,18 @@ def ensure_schema_and_objects(conn):
     # Create schema
     logger.info(f"Creating schema if not exists: {config.DEFAULT_SCHEMA}")
     cur.execute(
-        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(sql.Identifier(config.DEFAULT_SCHEMA))
+        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(
+            sql.Identifier(config.DEFAULT_SCHEMA)
+        )
     )
 
     # Create history table
-    logger.info(f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}")
+    logger.info(
+        f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}"
+    )
     cur.execute(
-    sql.SQL(
-        f"""
+        sql.SQL(
+            f"""
         CREATE TABLE IF NOT EXISTS {config.DEFAULT_SCHEMA}.{HISTORY_TABLE} (
             zillow_property_id BIGINT,
             snapshot_date DATE,
@@ -120,26 +119,13 @@ def ensure_schema_and_objects(conn):
             hasVideo BOOLEAN,
             is_fsba BOOLEAN,
             is_open_house BOOLEAN,
-
             extracted_at TIMESTAMPTZ,
             loaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
         """
-    )
-)
-
-    # Create current view
-    logger.info(f"  Creating view: {config.DEFAULT_SCHEMA}.{CURRENT_VIEW}")
-    cur.execute(
-        sql.SQL(
-            f"""
-            CREATE OR REPLACE VIEW {config.DEFAULT_SCHEMA}.{CURRENT_VIEW} AS
-            SELECT DISTINCT ON (zillow_property_id) *
-            FROM {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}
-            ORDER BY zillow_property_id, snapshot_date DESC;
-        """
         )
     )
+
 
     conn.commit()
     cur.close()
@@ -165,11 +151,14 @@ def load_csv(csv_file=DEFAULT_FILE):
             raise FileNotFoundError(f"CSV file not found: {csv_file}")
 
         df = pd.read_csv(csv_file)[ORDERED_COLS]
+        df["snapshot_date"] = pd.to_datetime(
+            df["snapshot_date"].astype(str), format="%Y%m%d"
+        ).dt.date
         logger.info(f"Loaded {len(df)} records from CSV")
         logger.info(f"Columns: {len(df.columns)}")
 
         df = df.where(pd.notna(df), None)
-        df['loaded_at'] = datetime.now()
+        df["loaded_at"] = datetime.now()
         # Write to temporary file
         tmp_file = "/tmp/property_history_load.csv"
         df.to_csv(tmp_file, index=False)
@@ -225,7 +214,6 @@ if __name__ == "__main__":
     logger.info(f"  Port: {db_config['port']}")
     logger.info(f"  Schema: {config.DEFAULT_SCHEMA}")
     logger.info(f"  Table: {HISTORY_TABLE}")
-    logger.info(f"  View: {CURRENT_VIEW}")
     logger.info(f"  Input file: {DEFAULT_FILE}")
 
     try:
@@ -241,7 +229,6 @@ if __name__ == "__main__":
         logger.info(f"Duration: {duration}")
         logger.info(f"Schema: {config.DEFAULT_SCHEMA}")
         logger.info(f"History table: {HISTORY_TABLE}")
-        logger.info(f"Current view: {CURRENT_VIEW}")
         logger.info("\nQuery the data with:")
 
     except Exception as e:

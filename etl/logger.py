@@ -13,21 +13,21 @@ def setup_logger():
     log_dir = os.path.join(project_root, "etl_log")
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "log.txt")
-    
+
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
-    
+
     root_logger.handlers.clear()
     formatter = logging.Formatter(
-        fmt='%(asctime)s | %(levelname)-8s | %(name)s | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     # File handler - writes to etl/log.txt
-    file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+    file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     root_logger.addHandler(file_handler)
-    
+
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
@@ -42,8 +42,9 @@ def get_logger(name):
         name: Module name (use __name__
     Returns:
         logging.Logger: Configured logger
-        
+
     """
     return logging.getLogger(name)
+
 
 LOG_FILE = setup_logger()

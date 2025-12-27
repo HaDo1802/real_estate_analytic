@@ -1,431 +1,992 @@
-2025-12-13 16:44:46 | INFO     | __main__ | Real Estate ETL Pipeline - Main Entry Point
-
-2025-12-13 16:44:46 | INFO     | email_notifier | Email notifier initialized: havando1802@gmail.com -> havando1802@gmail.com
-2025-12-13 16:44:46 | INFO     | __main__ | STARTING REAL ESTATE ETL PIPELINE
-2025-12-13 16:44:46 | INFO     | __main__ | Environment: Local | ETL Run ID: 20251213_1644
-2025-12-13 16:44:46 | INFO     | __main__ | STAGE 1: EXTRACT
-2025-12-13 16:44:46 | INFO     | extract | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
-2025-12-13 16:44:46 | INFO     | extract | Locations configured: 1
-2025-12-13 16:44:46 | INFO     | extract | Target locations: Las Vegas, NV
-2025-12-13 16:44:46 | INFO     | extract | Processing location: Las Vegas, NV
-2025-12-13 16:44:46 | INFO     | extract | Starting extraction for location: Las Vegas, NV (max_pages: 2)
-2025-12-13 16:44:46 | INFO     | extract | Fetching page 1 for Las Vegas, NV
-2025-12-13 16:44:48 | INFO     | extract | Page 1 fetched successfully - Properties: 41, Duration: 1.46s
-2025-12-13 16:44:48 | INFO     | extract | Fetching page 2 for Las Vegas, NV
-2025-12-13 16:44:50 | INFO     | extract | Page 2 fetched successfully - Properties: 41, Duration: 1.34s
-2025-12-13 16:44:50 | INFO     | extract | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
-2025-12-13 16:44:50 | INFO     | extract | SUCCESS - Fetched 82 properties from Las Vegas, NV
-2025-12-13 16:44:52 | INFO     | extract | EXTRACTION SUMMARY
-2025-12-13 16:44:52 | INFO     | extract | Locations processed: 1
-2025-12-13 16:44:52 | INFO     | extract | Successful: 1
-2025-12-13 16:44:52 | INFO     | extract | Failed: 0
-2025-12-13 16:44:52 | INFO     | extract | Total properties fetched: 82
-2025-12-13 16:44:52 | INFO     | extract | Unique properties: 82
-2025-12-13 16:44:52 | INFO     | extract | Duplicates removed: 0
-2025-12-13 16:44:52 | INFO     | extract | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_20251213.csv
-2025-12-13 16:44:52 | INFO     | extract | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-13 16:44:52 | INFO     | __main__ | EXTRACT COMPLETED: 82 properties
-2025-12-13 16:44:52 | INFO     | __main__ | STAGE 2: TRANSFORM
-2025-12-13 16:44:52 | INFO     | transform | STARTING DATA TRANSFORMATION
-2025-12-13 16:44:52 | INFO     | transform | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-13 16:44:52 | INFO     | transform | Loaded 82 raw records
-2025-12-13 16:44:52 | INFO     | transform | Columns found: 31
-2025-12-13 16:44:52 | INFO     | transform | Step 1: Extracting address components...
-2025-12-13 16:44:52 | INFO     | transform | Address components extracted successfully
-2025-12-13 16:44:52 | INFO     | transform | Step 2: Extracting listing subtype information...
-2025-12-13 16:44:52 | INFO     | transform | Listing subtype flags extracted
-2025-12-13 16:44:52 | INFO     | transform | Step 3: Converting timestamp fields...
-2025-12-13 16:44:52 | INFO     | transform | Converted datePriceChanged to datetime
-2025-12-13 16:44:52 | INFO     | transform | Step 4: Calculating listing dates...
-2025-12-13 16:44:52 | INFO     | transform | Listing dates calculated from daysOnZillow
-2025-12-13 16:44:52 | INFO     | transform | Step 5: Normalizing lot area to square feet...
-2025-12-13 16:44:52 | INFO     | transform | Lot areas normalized to sqft
-2025-12-13 16:44:52 | INFO     | transform | Step 6: Extracting Vegas districts...
-2025-12-13 16:44:52 | INFO     | transform | Identified 4 unique districts
-2025-12-13 16:44:52 | INFO     | transform | Step 7: Removing unnecessary columns...
-2025-12-13 16:44:52 | INFO     | transform | Removed 12 unnecessary columns
-2025-12-13 16:44:52 | INFO     | transform | ETL Run ID: 20251213_1644
-2025-12-13 16:44:52 | INFO     | transform | Processed at: 2025-12-13 16:44:52
-2025-12-13 16:44:52 | INFO     | transform | All records passed essential field validation
-2025-12-13 16:44:52 | INFO     | transform | Final record count: 82
-2025-12-13 16:44:52 | INFO     | transform | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251213.csv
-2025-12-13 16:44:52 | INFO     | transform | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-13 16:44:52 | INFO     | transform | TRANSFORMATION SUMMARY
-2025-12-13 16:44:52 | INFO     | transform | Input file: raw_latest.csv
-2025-12-13 16:44:52 | INFO     | transform | Initial records: 82
-2025-12-13 16:44:52 | INFO     | transform | Final records: 82
-2025-12-13 16:44:52 | INFO     | transform | Records filtered: 0 (0.0%)
-2025-12-13 16:44:52 | INFO     | transform | ETL Run ID: 20251213_1644
-2025-12-13 16:44:52 | INFO     | transform | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-13 16:44:52 | INFO     | __main__ | TRANSFORM COMPLETED
-2025-12-13 16:44:52 | INFO     | __main__ | STAGE 3: LOAD
-2025-12-13 16:44:52 | INFO     | load | STARTING DATA LOAD TO POSTGRESQL
-2025-12-13 16:44:52 | INFO     | load | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-13 16:44:52 | INFO     | load | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-13 16:44:52 | INFO     | load | Creating schema if not exists: real_estate_data
-2025-12-13 16:44:53 | INFO     | load | Creating table if not exists: real_estate_data.properties_data_history
-2025-12-13 16:44:53 | INFO     | load |   Creating view: real_estate_data.properties_data_current
-2025-12-13 16:44:53 | INFO     | load | Schema and objects verified/created
-2025-12-13 16:44:53 | INFO     | load | Loaded 82 records from CSV
-2025-12-13 16:44:53 | INFO     | load | Columns: 24
-2025-12-13 16:44:53 | INFO     | load | Created temporary file: /tmp/property_history_load.csv
-2025-12-13 16:44:53 | INFO     | load | COPY completed successfully
-2025-12-13 16:44:53 | INFO     | load | Total rows in history table: 410
-2025-12-13 16:44:53 | INFO     | load | Database connection closed
-2025-12-13 16:44:53 | INFO     | __main__ | LOAD COMPLETED
-2025-12-13 16:44:53 | INFO     | __main__ | 
-ETL PIPELINE COMPLETED SUCCESSFULLY
-2025-12-13 16:44:53 | INFO     | __main__ | Duration: 0:00:06 | Quality: 100.0%
-2025-12-13 16:44:53 | INFO     | __main__ | Sending success email...
-2025-12-13 16:44:53 | INFO     | email_notifier | Preparing success email notification...
-2025-12-13 16:44:53 | INFO     | email_notifier | Connecting to SMTP server: smtp.gmail.com:587
-2025-12-13 16:44:55 | INFO     | email_notifier | Email notification sent successfully to havando1802@gmail.com
-2025-12-14 14:48:34 | INFO     | __main__ | Running in Local environment
-
-2025-12-14 14:48:34 | INFO     | __main__ | STARTING DATA TRANSFORMATION
-2025-12-14 14:48:34 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-14 14:48:34 | INFO     | __main__ | Loaded 82 raw records
-2025-12-14 14:48:34 | INFO     | __main__ | Columns found: 31
-2025-12-14 14:48:34 | INFO     | __main__ | Step 1: Extracting address components...
-2025-12-14 14:48:34 | INFO     | __main__ | Address components extracted successfully
-2025-12-14 14:48:34 | INFO     | __main__ | Step 2: Extracting listing subtype information...
-2025-12-14 14:48:34 | INFO     | __main__ | Listing subtype flags extracted
-2025-12-14 14:48:34 | INFO     | __main__ | Step 3: Converting timestamp fields...
-2025-12-14 14:48:34 | INFO     | __main__ | Converted datePriceChanged to datetime
-2025-12-14 14:48:34 | INFO     | __main__ | Step 4: Add snapshot dates...
-2025-12-14 14:48:34 | INFO     | __main__ | Snapshot dates added
-2025-12-14 14:48:34 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
-2025-12-14 14:48:34 | INFO     | __main__ | Lot areas normalized to sqft
-2025-12-14 14:48:34 | INFO     | __main__ | Step 6: Extracting Vegas districts...
-2025-12-14 14:48:34 | INFO     | __main__ | Identified 4 unique districts
-2025-12-14 14:48:34 | INFO     | __main__ | Step 7: Removing unnecessary columns...
-2025-12-14 14:48:34 | INFO     | __main__ | Removed 3 unnecessary columns
-2025-12-14 14:48:34 | INFO     | __main__ | ETL Run ID: 20251214_1448
-2025-12-14 14:48:34 | INFO     | __main__ | Processed at: 2025-12-14 14:48:34
-2025-12-14 14:48:34 | INFO     | __main__ | All records passed essential field validation
-2025-12-14 14:48:34 | INFO     | __main__ | Final record count: 82
-2025-12-14 14:48:34 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
-2025-12-14 14:48:34 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 14:48:34 | INFO     | __main__ | TRANSFORMATION SUMMARY
-2025-12-14 14:48:34 | INFO     | __main__ | Input file: raw_latest.csv
-2025-12-14 14:48:34 | INFO     | __main__ | Initial records: 82
-2025-12-14 14:48:34 | INFO     | __main__ | Final records: 82
-2025-12-14 14:48:34 | INFO     | __main__ | Records filtered: 0 (0.0%)
-2025-12-14 14:48:34 | INFO     | __main__ | ETL Run ID: 20251214_1448
-2025-12-14 14:48:34 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-14 14:48:34 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
-2025-12-14 14:48:34 | INFO     | __main__ | Total duration: 0:00:00.062611
-2025-12-14 14:48:34 | INFO     | __main__ | Records transformed: 82
-2025-12-14 14:50:55 | INFO     | __main__ | Running in Local environment
-
-2025-12-14 14:50:55 | INFO     | __main__ | STARTING DATA TRANSFORMATION
-2025-12-14 14:50:55 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-14 14:50:55 | INFO     | __main__ | Loaded 82 raw records
-2025-12-14 14:50:55 | INFO     | __main__ | Columns found: 31
-2025-12-14 14:50:55 | INFO     | __main__ | Step 1: Extracting address components...
-2025-12-14 14:50:55 | INFO     | __main__ | Address components extracted successfully
-2025-12-14 14:50:55 | INFO     | __main__ | Step 2: Extracting listing subtype information...
-2025-12-14 14:50:55 | INFO     | __main__ | Listing subtype flags extracted
-2025-12-14 14:50:55 | INFO     | __main__ | Step 3: Converting timestamp fields...
-2025-12-14 14:50:55 | INFO     | __main__ | Converted datePriceChanged to datetime
-2025-12-14 14:50:55 | INFO     | __main__ | Step 4: Add snapshot dates...
-2025-12-14 14:50:55 | INFO     | __main__ | Snapshot dates added
-2025-12-14 14:50:55 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
-2025-12-14 14:50:55 | INFO     | __main__ | Lot areas normalized to sqft
-2025-12-14 14:50:55 | INFO     | __main__ | Step 6: Extracting Vegas districts...
-2025-12-14 14:50:55 | INFO     | __main__ | Identified 4 unique districts
-2025-12-14 14:50:55 | INFO     | __main__ | Step 7: Removing unnecessary columns...
-2025-12-14 14:50:55 | INFO     | __main__ | Removed 6 unnecessary columns
-2025-12-14 14:50:55 | INFO     | __main__ | ETL Run ID: 20251214_1450
-2025-12-14 14:50:55 | INFO     | __main__ | Processed at: 2025-12-14 14:50:55
-2025-12-14 14:50:55 | INFO     | __main__ | All records passed essential field validation
-2025-12-14 14:50:55 | INFO     | __main__ | Final record count: 82
-2025-12-14 14:50:55 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
-2025-12-14 14:50:55 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 14:50:55 | INFO     | __main__ | TRANSFORMATION SUMMARY
-2025-12-14 14:50:55 | INFO     | __main__ | Input file: raw_latest.csv
-2025-12-14 14:50:55 | INFO     | __main__ | Initial records: 82
-2025-12-14 14:50:55 | INFO     | __main__ | Final records: 82
-2025-12-14 14:50:55 | INFO     | __main__ | Records filtered: 0 (0.0%)
-2025-12-14 14:50:55 | INFO     | __main__ | ETL Run ID: 20251214_1450
-2025-12-14 14:50:55 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-14 14:50:55 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
-2025-12-14 14:50:55 | INFO     | __main__ | Total duration: 0:00:00.061385
-2025-12-14 14:50:55 | INFO     | __main__ | Records transformed: 82
-2025-12-14 14:51:45 | INFO     | __main__ | Running in Local environment
-
-2025-12-14 14:51:45 | INFO     | __main__ | STARTING DATA TRANSFORMATION
-2025-12-14 14:51:45 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-14 14:51:45 | INFO     | __main__ | Loaded 82 raw records
-2025-12-14 14:51:45 | INFO     | __main__ | Columns found: 31
-2025-12-14 14:51:45 | INFO     | __main__ | Step 1: Extracting address components...
-2025-12-14 14:51:45 | INFO     | __main__ | Address components extracted successfully
-2025-12-14 14:51:45 | INFO     | __main__ | Step 2: Extracting listing subtype information...
-2025-12-14 14:51:45 | INFO     | __main__ | Listing subtype flags extracted
-2025-12-14 14:51:45 | INFO     | __main__ | Step 3: Converting timestamp fields...
-2025-12-14 14:51:45 | INFO     | __main__ | Converted datePriceChanged to datetime
-2025-12-14 14:51:45 | INFO     | __main__ | Step 4: Add snapshot dates...
-2025-12-14 14:51:45 | INFO     | __main__ | Snapshot dates added
-2025-12-14 14:51:45 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
-2025-12-14 14:51:45 | INFO     | __main__ | Lot areas normalized to sqft
-2025-12-14 14:51:45 | INFO     | __main__ | Step 6: Extracting Vegas districts...
-2025-12-14 14:51:45 | INFO     | __main__ | Identified 4 unique districts
-2025-12-14 14:51:45 | INFO     | __main__ | Step 7: Removing unnecessary columns...
-2025-12-14 14:51:45 | INFO     | __main__ | Removed 6 unnecessary columns
-2025-12-14 14:51:45 | INFO     | __main__ | ETL Run ID: 20251214_1451
-2025-12-14 14:51:45 | INFO     | __main__ | Processed at: 2025-12-14 14:51:45
-2025-12-14 14:51:45 | INFO     | __main__ | All records passed essential field validation
-2025-12-14 14:51:45 | INFO     | __main__ | Final record count: 82
-2025-12-14 14:51:45 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
-2025-12-14 14:51:45 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 14:51:45 | INFO     | __main__ | TRANSFORMATION SUMMARY
-2025-12-14 14:51:45 | INFO     | __main__ | Input file: raw_latest.csv
-2025-12-14 14:51:45 | INFO     | __main__ | Initial records: 82
-2025-12-14 14:51:45 | INFO     | __main__ | Final records: 82
-2025-12-14 14:51:45 | INFO     | __main__ | Records filtered: 0 (0.0%)
-2025-12-14 14:51:45 | INFO     | __main__ | ETL Run ID: 20251214_1451
-2025-12-14 14:51:45 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-14 14:51:45 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
-2025-12-14 14:51:45 | INFO     | __main__ | Total duration: 0:00:00.064786
-2025-12-14 14:51:45 | INFO     | __main__ | Records transformed: 82
-2025-12-14 14:58:17 | INFO     | __main__ | Running in Local environment
-
-2025-12-14 14:58:17 | INFO     | __main__ | STARTING DATA TRANSFORMATION
-2025-12-14 14:58:17 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-14 14:58:17 | INFO     | __main__ | Loaded 82 raw records
-2025-12-14 14:58:17 | INFO     | __main__ | Columns found: 31
-2025-12-14 14:58:17 | INFO     | __main__ | Step 1: Extracting address components...
-2025-12-14 14:58:17 | INFO     | __main__ | Address components extracted successfully
-2025-12-14 14:58:17 | INFO     | __main__ | Step 2: Extracting listing subtype information...
-2025-12-14 14:58:17 | INFO     | __main__ | Listing subtype flags extracted
-2025-12-14 14:58:17 | INFO     | __main__ | Step 3: Converting timestamp fields...
-2025-12-14 14:58:17 | INFO     | __main__ | Converted datePriceChanged to datetime
-2025-12-14 14:58:17 | INFO     | __main__ | Step 4: Add snapshot dates...
-2025-12-14 14:58:17 | INFO     | __main__ | Snapshot dates added
-2025-12-14 14:58:17 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
-2025-12-14 14:58:17 | INFO     | __main__ | Lot areas normalized to sqft
-2025-12-14 14:58:17 | INFO     | __main__ | Step 6: Extracting Vegas districts...
-2025-12-14 14:58:17 | INFO     | __main__ | Identified 4 unique districts
-2025-12-14 14:58:17 | INFO     | __main__ | Step 7: Removing unnecessary columns...
-2025-12-14 14:58:17 | INFO     | __main__ | Removed 7 unnecessary columns
-2025-12-14 14:58:17 | INFO     | __main__ | ETL Run ID: 20251214_1458
-2025-12-14 14:58:17 | INFO     | __main__ | Processed at: 2025-12-14 14:58:17
-2025-12-14 14:58:17 | INFO     | __main__ | All records passed essential field validation
-2025-12-14 14:58:17 | INFO     | __main__ | Final record count: 82
-2025-12-14 14:58:17 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
-2025-12-14 14:58:17 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 14:58:17 | INFO     | __main__ | TRANSFORMATION SUMMARY
-2025-12-14 14:58:17 | INFO     | __main__ | Input file: raw_latest.csv
-2025-12-14 14:58:17 | INFO     | __main__ | Initial records: 82
-2025-12-14 14:58:17 | INFO     | __main__ | Final records: 82
-2025-12-14 14:58:17 | INFO     | __main__ | Records filtered: 0 (0.0%)
-2025-12-14 14:58:17 | INFO     | __main__ | ETL Run ID: 20251214_1458
-2025-12-14 14:58:17 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-14 14:58:17 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
-2025-12-14 14:58:17 | INFO     | __main__ | Total duration: 0:00:00.045227
-2025-12-14 14:58:17 | INFO     | __main__ | Records transformed: 82
-2025-12-14 15:00:49 | INFO     | __main__ | Running in Local environment
-
-2025-12-14 15:00:49 | INFO     | __main__ | STARTING DATA TRANSFORMATION
-2025-12-14 15:00:49 | INFO     | __main__ | Reading input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv
-2025-12-14 15:00:49 | INFO     | __main__ | Loaded 82 raw records
-2025-12-14 15:00:49 | INFO     | __main__ | Columns found: 31
-2025-12-14 15:00:49 | INFO     | __main__ | Step 1: Extracting address components...
-2025-12-14 15:00:49 | INFO     | __main__ | Address components extracted successfully
-2025-12-14 15:00:49 | INFO     | __main__ | Step 2: Extracting listing subtype information...
-2025-12-14 15:00:49 | INFO     | __main__ | Listing subtype flags extracted
-2025-12-14 15:00:49 | INFO     | __main__ | Step 3: Converting timestamp fields...
-2025-12-14 15:00:49 | INFO     | __main__ | Converted datePriceChanged to datetime
-2025-12-14 15:00:49 | INFO     | __main__ | Step 4: Add snapshot dates...
-2025-12-14 15:00:49 | INFO     | __main__ | Snapshot dates added
-2025-12-14 15:00:49 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
-2025-12-14 15:00:49 | INFO     | __main__ | Lot areas normalized to sqft
-2025-12-14 15:00:49 | INFO     | __main__ | Step 6: Extracting Vegas districts...
-2025-12-14 15:00:49 | INFO     | __main__ | Identified 4 unique districts
-2025-12-14 15:00:49 | INFO     | __main__ | Step 7: Removing unnecessary columns...
-2025-12-14 15:00:49 | INFO     | __main__ | Removed 7 unnecessary columns
-2025-12-14 15:00:49 | INFO     | __main__ | ETL Run ID: 20251214_1500
-2025-12-14 15:00:49 | INFO     | __main__ | Processed at: 2025-12-14 15:00:49
-2025-12-14 15:00:49 | INFO     | __main__ | All records passed essential field validation
-2025-12-14 15:00:49 | INFO     | __main__ | Final record count: 82
-2025-12-14 15:00:49 | INFO     | __main__ | Saved timestamped file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_20251214.csv
-2025-12-14 15:00:49 | INFO     | __main__ | Saved latest file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:00:49 | INFO     | __main__ | TRANSFORMATION SUMMARY
-2025-12-14 15:00:49 | INFO     | __main__ | Input file: raw_latest.csv
-2025-12-14 15:00:49 | INFO     | __main__ | Initial records: 82
-2025-12-14 15:00:49 | INFO     | __main__ | Final records: 82
-2025-12-14 15:00:49 | INFO     | __main__ | Records filtered: 0 (0.0%)
-2025-12-14 15:00:49 | INFO     | __main__ | ETL Run ID: 20251214_1500
-2025-12-14 15:00:49 | INFO     | __main__ | Output directory: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed
-2025-12-14 15:00:49 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
-2025-12-14 15:00:49 | INFO     | __main__ | Total duration: 0:00:00.044889
-2025-12-14 15:00:49 | INFO     | __main__ | Records transformed: 82
-2025-12-14 15:06:44 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
-2025-12-14 15:06:44 | INFO     | __main__ | 
+2025-12-25 16:42:17 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
+2025-12-25 16:42:17 | INFO     | __main__ | 
 Configuration:
-2025-12-14 15:06:44 | INFO     | __main__ |   Host: localhost
-2025-12-14 15:06:44 | INFO     | __main__ |   Database: zillow_api
-2025-12-14 15:06:44 | INFO     | __main__ |   User: postgres
-2025-12-14 15:06:44 | INFO     | __main__ |   Port: 5432
-2025-12-14 15:06:44 | INFO     | __main__ |   Schema: real_estate_data
-2025-12-14 15:06:44 | INFO     | __main__ |   Table: properties_data_history
-2025-12-14 15:06:44 | INFO     | __main__ |   View: properties_data_current
-2025-12-14 15:06:44 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:06:44 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:06:44 | INFO     | __main__ | Database connection successful!
+2025-12-25 16:42:17 | INFO     | __main__ |   Host: localhost
+2025-12-25 16:42:17 | INFO     | __main__ |   Database: zillow_api
+2025-12-25 16:42:17 | INFO     | __main__ |   User: postgres
+2025-12-25 16:42:17 | INFO     | __main__ |   Port: 5432
+2025-12-25 16:42:17 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-25 16:42:17 | INFO     | __main__ |   Table: properties_data_history
+2025-12-25 16:42:17 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-25 16:42:17 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-25 16:42:18 | INFO     | __main__ | Database connection successful!
 
-2025-12-14 15:06:44 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
-2025-12-14 15:06:44 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:06:44 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:06:44 | INFO     | __main__ | Creating schema if not exists: real_estate_data
-2025-12-14 15:06:44 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
-2025-12-14 15:06:44 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
-2025-12-14 15:06:44 | INFO     | __main__ | Schema and objects verified/created
-2025-12-14 15:06:44 | INFO     | __main__ | Loaded 82 records from CSV
-2025-12-14 15:06:44 | INFO     | __main__ | Columns: 28
-2025-12-14 15:06:44 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
-2025-12-14 15:06:44 | ERROR    | __main__ | Database error: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-Traceback (most recent call last):
-  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 180, in load_csv
-    cur.copy_expert(
-    ~~~~~~~~~~~~~~~^
-        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-        f,
-        ^^
-    )
-    ^
-psycopg2.errors.BadCopyFileFormat: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-
-2025-12-14 15:06:44 | INFO     | __main__ | Database connection closed
-2025-12-14 15:06:44 | ERROR    | __main__ | DATA LOAD FAILED
-2025-12-14 15:06:44 | ERROR    | __main__ | Error: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-
-2025-12-14 15:10:41 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
-2025-12-14 15:10:41 | INFO     | __main__ | 
-Configuration:
-2025-12-14 15:10:41 | INFO     | __main__ |   Host: localhost
-2025-12-14 15:10:41 | INFO     | __main__ |   Database: zillow_api
-2025-12-14 15:10:41 | INFO     | __main__ |   User: postgres
-2025-12-14 15:10:41 | INFO     | __main__ |   Port: 5432
-2025-12-14 15:10:41 | INFO     | __main__ |   Schema: real_estate_data
-2025-12-14 15:10:41 | INFO     | __main__ |   Table: properties_data_history
-2025-12-14 15:10:41 | INFO     | __main__ |   View: properties_data_current
-2025-12-14 15:10:41 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:10:41 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:10:41 | INFO     | __main__ | Database connection successful!
-
-2025-12-14 15:10:41 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
-2025-12-14 15:10:41 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:10:41 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:10:41 | INFO     | __main__ | Creating schema if not exists: real_estate_data
-2025-12-14 15:10:41 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
-2025-12-14 15:10:41 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
-2025-12-14 15:10:41 | INFO     | __main__ | Schema and objects verified/created
-2025-12-14 15:10:41 | INFO     | __main__ | Loaded 82 records from CSV
-2025-12-14 15:10:41 | INFO     | __main__ | Columns: 27
-2025-12-14 15:10:41 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
-2025-12-14 15:10:41 | ERROR    | __main__ | Database error: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-Traceback (most recent call last):
-  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 178, in load_csv
-    cur.copy_expert(
-    ~~~~~~~~~~~~~~~^
-        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-        f,
-        ^^
-    )
-    ^
-psycopg2.errors.BadCopyFileFormat: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-
-2025-12-14 15:10:41 | INFO     | __main__ | Database connection closed
-2025-12-14 15:10:41 | ERROR    | __main__ | DATA LOAD FAILED
-2025-12-14 15:10:41 | ERROR    | __main__ | Error: missing data for column "loaded_at"
-CONTEXT:  COPY properties_data_history, line 2: "7109503,20251214,2599000,,5,7,6903,0.29,12632.4,SINGLE_FAMILY,FOR_SALE,,,2200 Glenbrook Way,Las Vega..."
-
-2025-12-14 15:11:42 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
-2025-12-14 15:11:42 | INFO     | __main__ | 
-Configuration:
-2025-12-14 15:11:42 | INFO     | __main__ |   Host: localhost
-2025-12-14 15:11:42 | INFO     | __main__ |   Database: zillow_api
-2025-12-14 15:11:42 | INFO     | __main__ |   User: postgres
-2025-12-14 15:11:42 | INFO     | __main__ |   Port: 5432
-2025-12-14 15:11:42 | INFO     | __main__ |   Schema: real_estate_data
-2025-12-14 15:11:42 | INFO     | __main__ |   Table: properties_data_history
-2025-12-14 15:11:42 | INFO     | __main__ |   View: properties_data_current
-2025-12-14 15:11:42 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:11:42 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:11:42 | INFO     | __main__ | Database connection successful!
-
-2025-12-14 15:11:42 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
-2025-12-14 15:11:42 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:11:42 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:11:42 | INFO     | __main__ | Creating schema if not exists: real_estate_data
-2025-12-14 15:11:42 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
-2025-12-14 15:11:42 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
-2025-12-14 15:11:42 | INFO     | __main__ | Schema and objects verified/created
-2025-12-14 15:11:42 | INFO     | __main__ | Loaded 82 records from CSV
-2025-12-14 15:11:42 | INFO     | __main__ | Columns: 27
-2025-12-14 15:11:42 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
-2025-12-14 15:11:42 | ERROR    | __main__ | Database error: invalid input syntax for type bigint: "-129410.0"
-CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
-Traceback (most recent call last):
-  File "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/etl/load.py", line 178, in load_csv
-    cur.copy_expert(
-    ~~~~~~~~~~~~~~~^
-        sql.SQL("COPY {}.{} FROM STDIN WITH CSV HEADER").format(
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<2 lines>...
-        f,
-        ^^
-    )
-    ^
-psycopg2.errors.InvalidTextRepresentation: invalid input syntax for type bigint: "-129410.0"
-CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
-
-2025-12-14 15:11:42 | INFO     | __main__ | Database connection closed
-2025-12-14 15:11:42 | ERROR    | __main__ | DATA LOAD FAILED
-2025-12-14 15:11:42 | ERROR    | __main__ | Error: invalid input syntax for type bigint: "-129410.0"
-CONTEXT:  COPY properties_data_history, line 10, column pricechange: "-129410.0"
-
-2025-12-14 15:13:24 | INFO     | __main__ | RUNNING IN LOCAL ENVIRONMENT
-2025-12-14 15:13:24 | INFO     | __main__ | 
-Configuration:
-2025-12-14 15:13:24 | INFO     | __main__ |   Host: localhost
-2025-12-14 15:13:24 | INFO     | __main__ |   Database: zillow_api
-2025-12-14 15:13:24 | INFO     | __main__ |   User: postgres
-2025-12-14 15:13:24 | INFO     | __main__ |   Port: 5432
-2025-12-14 15:13:24 | INFO     | __main__ |   Schema: real_estate_data
-2025-12-14 15:13:24 | INFO     | __main__ |   Table: properties_data_history
-2025-12-14 15:13:24 | INFO     | __main__ |   View: properties_data_current
-2025-12-14 15:13:24 | INFO     | __main__ |   Input file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:13:24 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:13:24 | INFO     | __main__ | Database connection successful!
-
-2025-12-14 15:13:24 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
-2025-12-14 15:13:24 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
-2025-12-14 15:13:24 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
-2025-12-14 15:13:24 | INFO     | __main__ | Creating schema if not exists: real_estate_data
-2025-12-14 15:13:24 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
-2025-12-14 15:13:24 | INFO     | __main__ |   Creating view: real_estate_data.properties_data_current
-2025-12-14 15:13:24 | INFO     | __main__ | Schema and objects verified/created
-2025-12-14 15:13:24 | INFO     | __main__ | Loaded 82 records from CSV
-2025-12-14 15:13:24 | INFO     | __main__ | Columns: 27
-2025-12-14 15:13:24 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
-2025-12-14 15:13:24 | INFO     | __main__ | COPY completed successfully
-2025-12-14 15:13:24 | INFO     | __main__ | Total rows in history table: 82
-2025-12-14 15:13:24 | INFO     | __main__ | Database connection closed
-2025-12-14 15:13:24 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
-2025-12-14 15:13:24 | INFO     | __main__ | Duration: 0:00:00.094047
-2025-12-14 15:13:24 | INFO     | __main__ | Schema: real_estate_data
-2025-12-14 15:13:24 | INFO     | __main__ | History table: properties_data_history
-2025-12-14 15:13:24 | INFO     | __main__ | Current view: properties_data_current
-2025-12-14 15:13:24 | INFO     | __main__ | 
+2025-12-25 16:42:18 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-25 16:42:18 | INFO     | __main__ | Loading file: /Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/transformed/transformed_latest.csv
+2025-12-25 16:42:18 | INFO     | __main__ | Connecting to PostgreSQL (local): localhost:5432/zillow_api as postgres
+2025-12-25 16:42:18 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-25 16:42:18 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-25 16:42:18 | INFO     | __main__ | Schema and objects verified/created
+2025-12-25 16:42:18 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-25 16:42:18 | INFO     | __main__ | Columns: 27
+2025-12-25 16:42:18 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-25 16:42:18 | INFO     | __main__ | COPY completed successfully
+2025-12-25 16:42:18 | INFO     | __main__ | Total rows in history table: 328
+2025-12-25 16:42:18 | INFO     | __main__ | Database connection closed
+2025-12-25 16:42:18 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
+2025-12-25 16:42:18 | INFO     | __main__ | Duration: 0:00:00.080399
+2025-12-25 16:42:18 | INFO     | __main__ | Schema: real_estate_data
+2025-12-25 16:42:18 | INFO     | __main__ | History table: properties_data_history
+2025-12-25 16:42:18 | INFO     | __main__ | 
 Query the data with:
+2025-12-26 00:42:25 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:42:56 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:44:06 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:44:12 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:44:12 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:44:13 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:44:13 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:44:13 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:44:13 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:44:13 | INFO     | __main__ |   User: db_user
+2025-12-26 00:44:13 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:44:13 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:44:13 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:44:13 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:44:13 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:44:13 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:44:13 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:44:13 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:44:13 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:44:13 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:44:13 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:44:13 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:44:14 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:44:14 | INFO     | __main__ | Columns: 27
+2025-12-26 00:44:14 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:44:14 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:44:14 | INFO     | __main__ | Database connection closed
+2025-12-26 00:44:14 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:44:14 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:44:44 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:44:44 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:45:14 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:45:15 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:45:45 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:45:46 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:45:58 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:00 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:46:00 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:46:00 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:46:00 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:46:00 | INFO     | __main__ |   User: db_user
+2025-12-26 00:46:00 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:46:00 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:46:00 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:46:00 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:46:00 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:46:00 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:46:00 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:46:00 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:46:00 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:46:00 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:46:00 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:46:00 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:46:00 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:46:00 | INFO     | __main__ | Columns: 27
+2025-12-26 00:46:00 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:46:00 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:46:00 | INFO     | __main__ | Database connection closed
+2025-12-26 00:46:00 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:46:00 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:46:16 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:46:22 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.setup_data_directory scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:24 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.scrape_real_estate_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:25 | INFO     | __main__ | Starting Zillow data extraction script:
+2025-12-26 00:46:25 | INFO     | __main__ | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-26 00:46:25 | INFO     | __main__ | Locations configured: 1
+2025-12-26 00:46:25 | INFO     | __main__ | Target locations: Las Vegas, NV
+2025-12-26 00:46:25 | INFO     | __main__ | Processing location: Las Vegas, NV
+2025-12-26 00:46:25 | INFO     | __main__ | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-26 00:46:25 | INFO     | __main__ | Fetching page 1 for Las Vegas, NV
+2025-12-26 00:46:26 | INFO     | __main__ | Page 1 fetched successfully - Properties: 41, Duration: 1.13s
+2025-12-26 00:46:27 | INFO     | __main__ | Fetching page 2 for Las Vegas, NV
+2025-12-26 00:46:28 | INFO     | __main__ | Page 2 fetched successfully - Properties: 41, Duration: 0.99s
+2025-12-26 00:46:28 | INFO     | __main__ | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-26 00:46:28 | INFO     | __main__ | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-26 00:46:30 | INFO     | __main__ | EXTRACTION SUMMARY
+2025-12-26 00:46:30 | INFO     | __main__ | Locations processed: 1
+2025-12-26 00:46:30 | INFO     | __main__ | Successful: 1
+2025-12-26 00:46:30 | INFO     | __main__ | Failed: 0
+2025-12-26 00:46:30 | INFO     | __main__ | Total properties fetched: 82
+2025-12-26 00:46:30 | INFO     | __main__ | Unique properties: 82
+2025-12-26 00:46:30 | INFO     | __main__ | Duplicates removed: 0
+2025-12-26 00:46:30 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/raw/raw_20251226.csv
+2025-12-26 00:46:30 | INFO     | __main__ | Saved latest file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 00:46:30 | INFO     | __main__ | 
+======================================================================
+2025-12-26 00:46:30 | INFO     | __main__ | EXTRACTION COMPLETED SUCCESSFULLY
+2025-12-26 00:46:30 | INFO     | __main__ | ======================================================================
+2025-12-26 00:46:30 | INFO     | __main__ | Total unique properties: 82
+2025-12-26 00:46:30 | INFO     | __main__ | Total duration: 0:00:04.599778
+2025-12-26 00:46:30 | INFO     | __main__ | ======================================================================
+2025-12-26 00:46:31 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:33 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:34 | INFO     | __main__ | Running in Docker/Airflow environment
+
+2025-12-26 00:46:34 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-26 00:46:34 | INFO     | __main__ | Reading input file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 00:46:34 | INFO     | __main__ | Loaded 82 raw records
+2025-12-26 00:46:34 | INFO     | __main__ | Columns found: 33
+2025-12-26 00:46:34 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-26 00:46:34 | INFO     | __main__ | Address components extracted successfully
+2025-12-26 00:46:34 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-26 00:46:34 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-26 00:46:34 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-26 00:46:34 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-26 00:46:34 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-26 00:46:34 | INFO     | __main__ | Snapshot dates added
+2025-12-26 00:46:34 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-26 00:46:34 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-26 00:46:34 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-26 00:46:34 | INFO     | __main__ | Identified 3 unique districts
+2025-12-26 00:46:34 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-26 00:46:34 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-26 00:46:34 | INFO     | __main__ | Processed at: 2025-12-26 00:46:34
+2025-12-26 00:46:34 | INFO     | __main__ | All records passed essential field validation
+2025-12-26 00:46:34 | INFO     | __main__ | Final record count: 82
+2025-12-26 00:46:34 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/transformed/transformed_20251226.csv
+2025-12-26 00:46:34 | INFO     | __main__ | Saved latest file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:46:34 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-26 00:46:34 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-26 00:46:34 | INFO     | __main__ | Initial records: 82
+2025-12-26 00:46:34 | INFO     | __main__ | Final records: 82
+2025-12-26 00:46:34 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-26 00:46:34 | INFO     | __main__ | Output directory: /opt/airflow/data/transformed
+2025-12-26 00:46:34 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-26 00:46:34 | INFO     | __main__ | Total duration: 0:00:00.035831
+2025-12-26 00:46:34 | INFO     | __main__ | Records transformed: 82
+2025-12-26 00:46:36 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note_clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:36 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:46:37 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:46:37 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:46:37 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:46:37 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:46:37 | INFO     | __main__ |   User: db_user
+2025-12-26 00:46:37 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:46:37 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:46:37 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:46:37 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:46:37 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:46:37 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:46:37 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:46:37 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:46:37 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:46:38 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:46:38 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:46:38 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:46:38 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:46:38 | INFO     | __main__ | Columns: 27
+2025-12-26 00:46:38 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:46:38 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:46:38 | INFO     | __main__ | Database connection closed
+2025-12-26 00:46:38 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:46:38 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:46:47 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:47:18 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:47:50 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:48:22 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:48:39 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host b1e7be671ff0
+2025-12-26 00:48:40 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:48:40 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:48:40 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:48:40 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:48:40 | INFO     | __main__ |   User: db_user
+2025-12-26 00:48:40 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:48:40 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:48:40 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:48:40 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:48:40 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:48:40 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:48:40 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:48:40 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:48:40 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:48:40 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:48:40 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:48:40 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:48:40 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:48:40 | INFO     | __main__ | Columns: 27
+2025-12-26 00:48:40 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:48:40 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:48:40 | INFO     | __main__ | Database connection closed
+2025-12-26 00:48:40 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:48:40 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:48:52 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:48:52 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:49:23 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:49:23 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:49:54 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:49:55 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:50:26 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:50:26 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:52:51 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:52:51 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:53:01 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:53:01 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:53:32 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:53:32 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:53:36 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.setup_data_directory scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:37 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.scrape_real_estate_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:39 | INFO     | __main__ | Starting Zillow data extraction script:
+2025-12-26 00:53:39 | INFO     | __main__ | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-26 00:53:39 | INFO     | __main__ | Locations configured: 1
+2025-12-26 00:53:39 | INFO     | __main__ | Target locations: Las Vegas, NV
+2025-12-26 00:53:39 | INFO     | __main__ | Processing location: Las Vegas, NV
+2025-12-26 00:53:39 | INFO     | __main__ | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-26 00:53:39 | INFO     | __main__ | Fetching page 1 for Las Vegas, NV
+2025-12-26 00:53:41 | INFO     | __main__ | Page 1 fetched successfully - Properties: 41, Duration: 1.6s
+2025-12-26 00:53:41 | INFO     | __main__ | Fetching page 2 for Las Vegas, NV
+2025-12-26 00:53:43 | INFO     | __main__ | Page 2 fetched successfully - Properties: 41, Duration: 1.55s
+2025-12-26 00:53:43 | INFO     | __main__ | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-26 00:53:43 | INFO     | __main__ | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-26 00:53:45 | INFO     | __main__ | EXTRACTION SUMMARY
+2025-12-26 00:53:45 | INFO     | __main__ | Locations processed: 1
+2025-12-26 00:53:45 | INFO     | __main__ | Successful: 1
+2025-12-26 00:53:45 | INFO     | __main__ | Failed: 0
+2025-12-26 00:53:45 | INFO     | __main__ | Total properties fetched: 82
+2025-12-26 00:53:45 | INFO     | __main__ | Unique properties: 82
+2025-12-26 00:53:45 | INFO     | __main__ | Duplicates removed: 0
+2025-12-26 00:53:45 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/raw/raw_20251226.csv
+2025-12-26 00:53:45 | INFO     | __main__ | Saved latest file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 00:53:45 | INFO     | __main__ | 
+======================================================================
+2025-12-26 00:53:45 | INFO     | __main__ | EXTRACTION COMPLETED SUCCESSFULLY
+2025-12-26 00:53:45 | INFO     | __main__ | ======================================================================
+2025-12-26 00:53:45 | INFO     | __main__ | Total unique properties: 82
+2025-12-26 00:53:45 | INFO     | __main__ | Total duration: 0:00:05.662254
+2025-12-26 00:53:45 | INFO     | __main__ | ======================================================================
+2025-12-26 00:53:47 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:48 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:48 | INFO     | __main__ | Running in Docker/Airflow environment
+
+2025-12-26 00:53:48 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-26 00:53:48 | INFO     | __main__ | Reading input file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 00:53:48 | INFO     | __main__ | Loaded 82 raw records
+2025-12-26 00:53:48 | INFO     | __main__ | Columns found: 33
+2025-12-26 00:53:48 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-26 00:53:48 | INFO     | __main__ | Address components extracted successfully
+2025-12-26 00:53:48 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-26 00:53:48 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-26 00:53:48 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-26 00:53:48 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-26 00:53:48 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-26 00:53:48 | INFO     | __main__ | Snapshot dates added
+2025-12-26 00:53:48 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-26 00:53:48 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-26 00:53:48 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-26 00:53:48 | INFO     | __main__ | Identified 3 unique districts
+2025-12-26 00:53:48 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-26 00:53:48 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-26 00:53:48 | INFO     | __main__ | Processed at: 2025-12-26 00:53:48
+2025-12-26 00:53:48 | INFO     | __main__ | All records passed essential field validation
+2025-12-26 00:53:48 | INFO     | __main__ | Final record count: 82
+2025-12-26 00:53:48 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/transformed/transformed_20251226.csv
+2025-12-26 00:53:48 | INFO     | __main__ | Saved latest file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:53:48 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-26 00:53:48 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-26 00:53:48 | INFO     | __main__ | Initial records: 82
+2025-12-26 00:53:48 | INFO     | __main__ | Final records: 82
+2025-12-26 00:53:48 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-26 00:53:48 | INFO     | __main__ | Output directory: /opt/airflow/data/transformed
+2025-12-26 00:53:48 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-26 00:53:48 | INFO     | __main__ | Total duration: 0:00:00.030237
+2025-12-26 00:53:48 | INFO     | __main__ | Records transformed: 82
+2025-12-26 00:53:49 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note_clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:50 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:53:51 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:53:51 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:53:51 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:53:51 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:53:51 | INFO     | __main__ |   User: db_user
+2025-12-26 00:53:51 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:53:51 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:53:51 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:53:51 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:53:51 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:53:51 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:53:51 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:53:51 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:53:51 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:53:51 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:53:51 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:53:51 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:53:51 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:53:51 | INFO     | __main__ | Columns: 27
+2025-12-26 00:53:51 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:53:51 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:53:51 | INFO     | __main__ | Database connection closed
+2025-12-26 00:53:51 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:53:51 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:54:03 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:54:34 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:55:05 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:55:35 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:55:52 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host da0eded878be
+2025-12-26 00:55:53 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 00:55:53 | INFO     | __main__ | 
+Configuration:
+2025-12-26 00:55:53 | INFO     | __main__ |   Host: postgres
+2025-12-26 00:55:53 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 00:55:53 | INFO     | __main__ |   User: db_user
+2025-12-26 00:55:53 | INFO     | __main__ |   Port: 5432
+2025-12-26 00:55:53 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 00:55:53 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 00:55:53 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:55:53 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:55:53 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 00:55:53 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 00:55:53 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 00:55:53 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 00:55:53 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 00:55:53 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 00:55:53 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 00:55:53 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 00:55:53 | INFO     | __main__ | Columns: 27
+2025-12-26 00:55:53 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 00:55:53 | ERROR    | __main__ | Database error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+Traceback (most recent call last):
+  File "/opt/airflow/etl/load.py", line 167, in load_csv
+    cur.copy_expert(
+psycopg2.errors.BadCopyFileFormat: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:55:53 | INFO     | __main__ | Database connection closed
+2025-12-26 00:55:53 | ERROR    | __main__ | DATA LOAD FAILED
+2025-12-26 00:55:53 | ERROR    | __main__ | Error: extra data after last expected column
+CONTEXT:  COPY properties_data_history, line 2: "6893554,2025-12-26,414990,,4,3,1849,5227.2,5227.2,SINGLE_FAMILY,FOR_SALE,2261.0,415000.0,7129 Dillse..."
+
+2025-12-26 00:56:06 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:56:06 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:56:37 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:56:37 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:57:08 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:57:08 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:57:38 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:57:38 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:58:09 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:58:09 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:58:39 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:58:39 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:59:10 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:59:10 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 00:59:40 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 00:59:40 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:00:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:00:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:00:42 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:00:42 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:01:13 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:01:13 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:08:27 | INFO     | airflow.providers.fab.auth_manager.security_manager.override | Created Permission View: can read on DAG:real_estate_etl_pipeline
+2025-12-26 01:08:27 | INFO     | airflow.providers.fab.auth_manager.security_manager.override | Created Permission View: can delete on DAG:real_estate_etl_pipeline
+2025-12-26 01:08:27 | INFO     | airflow.providers.fab.auth_manager.security_manager.override | Created Permission View: can edit on DAG:real_estate_etl_pipeline
+2025-12-26 01:08:27 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:08:27 | INFO     | airflow.models.dag | Creating ORM DAG for real_estate_etl_pipeline
+2025-12-26 01:08:27 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-24 06:00:00+00:00, run_after=2025-12-25 06:00:00+00:00
+2025-12-26 01:08:52 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.setup_data_directory scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:08:53 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.scrape_real_estate_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:08:54 | INFO     | __main__ | Starting Zillow data extraction script:
+2025-12-26 01:08:54 | INFO     | __main__ | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-26 01:08:54 | INFO     | __main__ | Locations configured: 1
+2025-12-26 01:08:54 | INFO     | __main__ | Target locations: Las Vegas, NV
+2025-12-26 01:08:54 | INFO     | __main__ | Processing location: Las Vegas, NV
+2025-12-26 01:08:54 | INFO     | __main__ | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-26 01:08:54 | INFO     | __main__ | Fetching page 1 for Las Vegas, NV
+2025-12-26 01:08:55 | INFO     | __main__ | Page 1 fetched successfully - Properties: 41, Duration: 1.14s
+2025-12-26 01:08:55 | INFO     | __main__ | Fetching page 2 for Las Vegas, NV
+2025-12-26 01:08:58 | INFO     | __main__ | Page 2 fetched successfully - Properties: 41, Duration: 2.66s
+2025-12-26 01:08:58 | INFO     | __main__ | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-26 01:08:58 | INFO     | __main__ | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-26 01:08:59 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:09:00 | INFO     | __main__ | EXTRACTION SUMMARY
+2025-12-26 01:09:00 | INFO     | __main__ | Locations processed: 1
+2025-12-26 01:09:00 | INFO     | __main__ | Successful: 1
+2025-12-26 01:09:00 | INFO     | __main__ | Failed: 0
+2025-12-26 01:09:00 | INFO     | __main__ | Total properties fetched: 82
+2025-12-26 01:09:00 | INFO     | __main__ | Unique properties: 82
+2025-12-26 01:09:00 | INFO     | __main__ | Duplicates removed: 0
+2025-12-26 01:09:00 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/raw/raw_20251226.csv
+2025-12-26 01:09:00 | INFO     | __main__ | Saved latest file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 01:09:00 | INFO     | __main__ | 
+======================================================================
+2025-12-26 01:09:00 | INFO     | __main__ | EXTRACTION COMPLETED SUCCESSFULLY
+2025-12-26 01:09:00 | INFO     | __main__ | ======================================================================
+2025-12-26 01:09:00 | INFO     | __main__ | Total unique properties: 82
+2025-12-26 01:09:00 | INFO     | __main__ | Total duration: 0:00:06.326347
+2025-12-26 01:09:00 | INFO     | __main__ | ======================================================================
+2025-12-26 01:09:01 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:02 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:03 | INFO     | __main__ | Running in Docker/Airflow environment
+
+2025-12-26 01:09:03 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-26 01:09:03 | INFO     | __main__ | Reading input file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 01:09:03 | INFO     | __main__ | Loaded 82 raw records
+2025-12-26 01:09:03 | INFO     | __main__ | Columns found: 33
+2025-12-26 01:09:03 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-26 01:09:03 | INFO     | __main__ | Address components extracted successfully
+2025-12-26 01:09:03 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-26 01:09:03 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-26 01:09:03 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-26 01:09:03 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-26 01:09:03 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-26 01:09:03 | INFO     | __main__ | Snapshot dates added
+2025-12-26 01:09:03 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-26 01:09:03 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-26 01:09:03 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-26 01:09:03 | INFO     | __main__ | Identified 3 unique districts
+2025-12-26 01:09:03 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-26 01:09:03 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-26 01:09:03 | INFO     | __main__ | Processed at: 2025-12-26 01:09:03
+2025-12-26 01:09:03 | INFO     | __main__ | All records passed essential field validation
+2025-12-26 01:09:03 | INFO     | __main__ | Final record count: 82
+2025-12-26 01:09:03 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/transformed/transformed_20251226.csv
+2025-12-26 01:09:03 | INFO     | __main__ | Saved latest file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:03 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-26 01:09:03 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-26 01:09:03 | INFO     | __main__ | Initial records: 82
+2025-12-26 01:09:03 | INFO     | __main__ | Final records: 82
+2025-12-26 01:09:03 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-26 01:09:03 | INFO     | __main__ | Output directory: /opt/airflow/data/transformed
+2025-12-26 01:09:03 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-26 01:09:03 | INFO     | __main__ | Total duration: 0:00:00.081203
+2025-12-26 01:09:03 | INFO     | __main__ | Records transformed: 82
+2025-12-26 01:09:05 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note_clean_data scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:06 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:07 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 01:09:07 | INFO     | __main__ | 
+Configuration:
+2025-12-26 01:09:07 | INFO     | __main__ |   Host: postgres
+2025-12-26 01:09:07 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 01:09:07 | INFO     | __main__ |   User: db_user
+2025-12-26 01:09:07 | INFO     | __main__ |   Port: 5432
+2025-12-26 01:09:07 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 01:09:07 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 01:09:07 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:07 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 01:09:07 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 01:09:07 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 01:09:07 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:07 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 01:09:07 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 01:09:07 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 01:09:07 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 01:09:07 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 01:09:07 | INFO     | __main__ | Columns: 27
+2025-12-26 01:09:07 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 01:09:07 | INFO     | __main__ | COPY completed successfully
+2025-12-26 01:09:07 | INFO     | __main__ | Total rows in history table: 82
+2025-12-26 01:09:07 | INFO     | __main__ | Database connection closed
+2025-12-26 01:09:07 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
+2025-12-26 01:09:07 | INFO     | __main__ | Duration: 0:00:00.052995
+2025-12-26 01:09:07 | INFO     | __main__ | Schema: real_estate_data
+2025-12-26 01:09:07 | INFO     | __main__ | History table: properties_data_history
+2025-12-26 01:09:07 | INFO     | __main__ | 
+Query the data with:
+2025-12-26 01:09:08 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.send_success_email scheduled__2025-12-24T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:13 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.setup_data_directory manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:14 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.scrape_real_estate_data manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:15 | INFO     | __main__ | Starting Zillow data extraction script:
+2025-12-26 01:09:15 | INFO     | __main__ | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-26 01:09:15 | INFO     | __main__ | Locations configured: 1
+2025-12-26 01:09:15 | INFO     | __main__ | Target locations: Las Vegas, NV
+2025-12-26 01:09:15 | INFO     | __main__ | Processing location: Las Vegas, NV
+2025-12-26 01:09:15 | INFO     | __main__ | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-26 01:09:15 | INFO     | __main__ | Fetching page 1 for Las Vegas, NV
+2025-12-26 01:09:16 | INFO     | __main__ | Page 1 fetched successfully - Properties: 41, Duration: 0.4s
+2025-12-26 01:09:16 | INFO     | __main__ | Fetching page 2 for Las Vegas, NV
+2025-12-26 01:09:16 | INFO     | __main__ | Page 2 fetched successfully - Properties: 41, Duration: 0.41s
+2025-12-26 01:09:16 | INFO     | __main__ | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-26 01:09:16 | INFO     | __main__ | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-26 01:09:18 | INFO     | __main__ | EXTRACTION SUMMARY
+2025-12-26 01:09:18 | INFO     | __main__ | Locations processed: 1
+2025-12-26 01:09:18 | INFO     | __main__ | Successful: 1
+2025-12-26 01:09:18 | INFO     | __main__ | Failed: 0
+2025-12-26 01:09:18 | INFO     | __main__ | Total properties fetched: 82
+2025-12-26 01:09:18 | INFO     | __main__ | Unique properties: 82
+2025-12-26 01:09:18 | INFO     | __main__ | Duplicates removed: 0
+2025-12-26 01:09:19 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/raw/raw_20251226.csv
+2025-12-26 01:09:19 | INFO     | __main__ | Saved latest file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 01:09:19 | INFO     | __main__ | 
+======================================================================
+2025-12-26 01:09:19 | INFO     | __main__ | EXTRACTION COMPLETED SUCCESSFULLY
+2025-12-26 01:09:19 | INFO     | __main__ | ======================================================================
+2025-12-26 01:09:19 | INFO     | __main__ | Total unique properties: 82
+2025-12-26 01:09:19 | INFO     | __main__ | Total duration: 0:00:03.315733
+2025-12-26 01:09:19 | INFO     | __main__ | ======================================================================
+2025-12-26 01:09:20 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:21 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.clean_data manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:22 | INFO     | __main__ | Running in Docker/Airflow environment
+
+2025-12-26 01:09:22 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-26 01:09:22 | INFO     | __main__ | Reading input file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 01:09:22 | INFO     | __main__ | Loaded 82 raw records
+2025-12-26 01:09:22 | INFO     | __main__ | Columns found: 33
+2025-12-26 01:09:22 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-26 01:09:22 | INFO     | __main__ | Address components extracted successfully
+2025-12-26 01:09:22 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-26 01:09:22 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-26 01:09:22 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-26 01:09:22 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-26 01:09:22 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-26 01:09:22 | INFO     | __main__ | Snapshot dates added
+2025-12-26 01:09:22 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-26 01:09:22 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-26 01:09:22 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-26 01:09:22 | INFO     | __main__ | Identified 3 unique districts
+2025-12-26 01:09:22 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-26 01:09:22 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-26 01:09:22 | INFO     | __main__ | Processed at: 2025-12-26 01:09:22
+2025-12-26 01:09:22 | INFO     | __main__ | All records passed essential field validation
+2025-12-26 01:09:22 | INFO     | __main__ | Final record count: 82
+2025-12-26 01:09:22 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/transformed/transformed_20251226.csv
+2025-12-26 01:09:22 | INFO     | __main__ | Saved latest file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:22 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-26 01:09:22 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-26 01:09:22 | INFO     | __main__ | Initial records: 82
+2025-12-26 01:09:22 | INFO     | __main__ | Final records: 82
+2025-12-26 01:09:22 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-26 01:09:22 | INFO     | __main__ | Output directory: /opt/airflow/data/transformed
+2025-12-26 01:09:22 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-26 01:09:22 | INFO     | __main__ | Total duration: 0:00:00.017093
+2025-12-26 01:09:22 | INFO     | __main__ | Records transformed: 82
+2025-12-26 01:09:22 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note_clean_data manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:24 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:25 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 01:09:25 | INFO     | __main__ | 
+Configuration:
+2025-12-26 01:09:25 | INFO     | __main__ |   Host: postgres
+2025-12-26 01:09:25 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 01:09:25 | INFO     | __main__ |   User: db_user
+2025-12-26 01:09:25 | INFO     | __main__ |   Port: 5432
+2025-12-26 01:09:25 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 01:09:25 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 01:09:25 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:25 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 01:09:25 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 01:09:25 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 01:09:25 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 01:09:25 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 01:09:25 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 01:09:25 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 01:09:25 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 01:09:25 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 01:09:25 | INFO     | __main__ | Columns: 27
+2025-12-26 01:09:25 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 01:09:25 | INFO     | __main__ | COPY completed successfully
+2025-12-26 01:09:25 | INFO     | __main__ | Total rows in history table: 164
+2025-12-26 01:09:25 | INFO     | __main__ | Database connection closed
+2025-12-26 01:09:25 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
+2025-12-26 01:09:25 | INFO     | __main__ | Duration: 0:00:00.024641
+2025-12-26 01:09:25 | INFO     | __main__ | Schema: real_estate_data
+2025-12-26 01:09:25 | INFO     | __main__ | History table: properties_data_history
+2025-12-26 01:09:25 | INFO     | __main__ | 
+Query the data with:
+2025-12-26 01:09:26 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.send_success_email manual__2025-12-26T01:08:55.964419+00:00 [queued]> on host c059e05b2d77
+2025-12-26 01:09:30 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:09:30 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:10:01 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:10:01 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:10:32 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:10:32 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:11:02 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:11:02 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:11:33 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:11:33 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:12:04 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:12:04 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:12:34 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:12:34 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:13:05 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:13:05 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:13:35 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:13:35 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:14:06 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:14:06 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:14:37 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:14:37 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:15:08 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:15:08 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:15:38 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:15:38 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:16:09 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:16:09 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:16:39 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:16:39 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:17:10 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:17:10 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:17:40 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:17:40 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:18:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:18:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:18:41 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:18:41 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:19:12 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:19:12 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:19:43 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:19:43 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:20:13 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:20:13 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:20:44 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:20:44 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:21:14 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:21:14 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:21:45 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:21:45 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:22:16 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:22:16 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:22:46 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:22:46 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:23:17 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:23:17 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:23:47 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:23:47 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:24:18 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:24:18 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:24:49 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:24:49 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:25:37 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:25:37 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:26:08 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:26:08 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:33:09 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:33:09 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:33:40 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:33:40 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 01:49:41 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 01:49:41 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:06:46 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:06:46 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:07:16 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:07:16 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:23:07 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:23:07 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:23:37 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:23:37 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:39:07 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:39:07 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:39:38 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:39:38 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:40:08 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:40:08 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:40:39 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:40:39 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:41:10 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:41:10 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:57:54 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:57:54 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:58:25 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:58:25 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:58:56 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:58:56 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 02:59:26 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 02:59:26 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:16:29 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:16:29 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:16:59 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:16:59 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:17:30 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:17:30 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:20:48 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:20:48 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:21:19 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:21:19 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:21:50 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:21:50 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:22:20 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:22:20 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:22:51 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:22:51 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:23:21 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:23:21 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:23:52 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:23:52 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:24:22 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:24:22 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:24:53 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:24:53 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:25:24 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:25:24 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:43:19 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:43:19 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:43:50 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:43:50 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:44:20 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:44:20 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:44:51 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:44:51 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:45:21 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:45:21 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:45:52 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:45:52 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:46:41 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:46:41 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:47:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:47:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:47:42 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:47:42 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:48:12 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:48:12 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:48:44 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:48:44 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:49:14 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:49:14 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:49:45 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:49:45 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:50:15 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:50:15 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:50:46 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:50:46 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:51:17 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:51:17 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:51:47 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:51:47 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:52:18 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:52:18 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:52:49 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:52:49 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 03:53:20 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 03:53:20 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:08:43 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:08:43 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:21:49 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:21:49 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:22:20 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:22:20 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:22:51 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:22:51 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:23:21 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:23:21 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:38:49 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:38:49 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:39:20 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:39:20 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:39:50 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:39:50 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:40:21 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:40:21 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:40:52 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:40:52 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:41:23 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:41:23 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:42:35 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:42:35 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:43:05 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:43:05 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:43:36 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:43:36 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:44:07 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:44:07 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 04:59:40 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 04:59:40 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 05:17:36 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 05:17:36 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-25 06:00:00+00:00, run_after=2025-12-26 06:00:00+00:00
+2025-12-26 06:21:57 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 06:21:57 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.setup_data_directory scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:21:59 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.scrape_real_estate_data scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:22:00 | INFO     | __main__ | Starting Zillow data extraction script:
+2025-12-26 06:22:00 | INFO     | __main__ | STARTING DATA EXTRACTION FROM ALL LISTED LOCATIONS
+2025-12-26 06:22:00 | INFO     | __main__ | Locations configured: 1
+2025-12-26 06:22:00 | INFO     | __main__ | Target locations: Las Vegas, NV
+2025-12-26 06:22:00 | INFO     | __main__ | Processing location: Las Vegas, NV
+2025-12-26 06:22:00 | INFO     | __main__ | Starting extraction for location: Las Vegas, NV (max_pages: 2)
+2025-12-26 06:22:00 | INFO     | __main__ | Fetching page 1 for Las Vegas, NV
+2025-12-26 06:22:01 | INFO     | __main__ | Page 1 fetched successfully - Properties: 41, Duration: 1.26s
+2025-12-26 06:22:02 | INFO     | __main__ | Fetching page 2 for Las Vegas, NV
+2025-12-26 06:22:03 | INFO     | __main__ | Page 2 fetched successfully - Properties: 41, Duration: 1.13s
+2025-12-26 06:22:03 | INFO     | __main__ | Extraction complete for Las Vegas, NV - Total properties: 82, Pages processed: 2
+2025-12-26 06:22:03 | INFO     | __main__ | SUCCESS - Fetched 82 properties from Las Vegas, NV
+2025-12-26 06:22:05 | INFO     | __main__ | EXTRACTION SUMMARY
+2025-12-26 06:22:05 | INFO     | __main__ | Locations processed: 1
+2025-12-26 06:22:05 | INFO     | __main__ | Successful: 1
+2025-12-26 06:22:05 | INFO     | __main__ | Failed: 0
+2025-12-26 06:22:05 | INFO     | __main__ | Total properties fetched: 82
+2025-12-26 06:22:05 | INFO     | __main__ | Unique properties: 82
+2025-12-26 06:22:05 | INFO     | __main__ | Duplicates removed: 0
+2025-12-26 06:22:05 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/raw/raw_20251226.csv
+2025-12-26 06:22:05 | INFO     | __main__ | Saved latest file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 06:22:05 | INFO     | __main__ | 
+======================================================================
+2025-12-26 06:22:05 | INFO     | __main__ | EXTRACTION COMPLETED SUCCESSFULLY
+2025-12-26 06:22:05 | INFO     | __main__ | ======================================================================
+2025-12-26 06:22:05 | INFO     | __main__ | Total unique properties: 82
+2025-12-26 06:22:05 | INFO     | __main__ | Total duration: 0:00:04.877065
+2025-12-26 06:22:05 | INFO     | __main__ | ======================================================================
+2025-12-26 06:22:06 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:22:07 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.clean_data scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:22:08 | INFO     | __main__ | Running in Docker/Airflow environment
+
+2025-12-26 06:22:08 | INFO     | __main__ | STARTING DATA TRANSFORMATION
+2025-12-26 06:22:08 | INFO     | __main__ | Reading input file: /opt/airflow/data/raw/raw_latest.csv
+2025-12-26 06:22:08 | INFO     | __main__ | Loaded 82 raw records
+2025-12-26 06:22:08 | INFO     | __main__ | Columns found: 33
+2025-12-26 06:22:08 | INFO     | __main__ | Step 1: Extracting address components...
+2025-12-26 06:22:08 | INFO     | __main__ | Address components extracted successfully
+2025-12-26 06:22:08 | INFO     | __main__ | Step 2: Extracting listing subtype information...
+2025-12-26 06:22:08 | INFO     | __main__ | Listing subtype flags extracted
+2025-12-26 06:22:08 | INFO     | __main__ | Step 3: Converting timestamp fields...
+2025-12-26 06:22:08 | INFO     | __main__ | Converted datePriceChanged to datetime
+2025-12-26 06:22:08 | INFO     | __main__ | Step 4: Add snapshot dates...
+2025-12-26 06:22:08 | INFO     | __main__ | Snapshot dates added
+2025-12-26 06:22:08 | INFO     | __main__ | Step 5: Normalizing lot area to square feet...
+2025-12-26 06:22:08 | INFO     | __main__ | Lot areas normalized to sqft
+2025-12-26 06:22:08 | INFO     | __main__ | Step 6: Extracting Vegas districts...
+2025-12-26 06:22:08 | INFO     | __main__ | Identified 3 unique districts
+2025-12-26 06:22:08 | INFO     | __main__ | Step 7: Removing unnecessary columns...
+2025-12-26 06:22:08 | INFO     | __main__ | Removed 7 unnecessary columns
+2025-12-26 06:22:08 | INFO     | __main__ | Processed at: 2025-12-26 06:22:08
+2025-12-26 06:22:08 | INFO     | __main__ | All records passed essential field validation
+2025-12-26 06:22:08 | INFO     | __main__ | Final record count: 82
+2025-12-26 06:22:08 | INFO     | __main__ | Saved timestamped file: /opt/airflow/data/transformed/transformed_20251226.csv
+2025-12-26 06:22:08 | INFO     | __main__ | Saved latest file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 06:22:08 | INFO     | __main__ | TRANSFORMATION SUMMARY
+2025-12-26 06:22:08 | INFO     | __main__ | Input file: raw_latest.csv
+2025-12-26 06:22:08 | INFO     | __main__ | Initial records: 82
+2025-12-26 06:22:08 | INFO     | __main__ | Final records: 82
+2025-12-26 06:22:08 | INFO     | __main__ | Records filtered: 0 (0.0%)
+2025-12-26 06:22:08 | INFO     | __main__ | Output directory: /opt/airflow/data/transformed
+2025-12-26 06:22:08 | INFO     | __main__ | TRANSFORMATION COMPLETED SUCCESSFULLY
+2025-12-26 06:22:08 | INFO     | __main__ | Total duration: 0:00:00.108247
+2025-12-26 06:22:08 | INFO     | __main__ | Records transformed: 82
+2025-12-26 06:22:09 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.note_clean_data scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:22:10 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.upload_cleaned_data_to_postgres scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:22:11 | INFO     | __main__ | RUNNING IN DOCKER ENVIRONMENT
+2025-12-26 06:22:11 | INFO     | __main__ | 
+Configuration:
+2025-12-26 06:22:11 | INFO     | __main__ |   Host: postgres
+2025-12-26 06:22:11 | INFO     | __main__ |   Database: docker_real_estate
+2025-12-26 06:22:11 | INFO     | __main__ |   User: db_user
+2025-12-26 06:22:11 | INFO     | __main__ |   Port: 5432
+2025-12-26 06:22:11 | INFO     | __main__ |   Schema: real_estate_data
+2025-12-26 06:22:11 | INFO     | __main__ |   Table: properties_data_history
+2025-12-26 06:22:11 | INFO     | __main__ |   Input file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 06:22:11 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 06:22:11 | INFO     | __main__ | Database connection successful!
+
+2025-12-26 06:22:11 | INFO     | __main__ | STARTING DATA LOAD TO POSTGRESQL
+2025-12-26 06:22:11 | INFO     | __main__ | Loading file: /opt/airflow/data/transformed/transformed_latest.csv
+2025-12-26 06:22:11 | INFO     | __main__ | Connecting to PostgreSQL (docker): postgres:5432/docker_real_estate as db_user
+2025-12-26 06:22:11 | INFO     | __main__ | Creating schema if not exists: real_estate_data
+2025-12-26 06:22:11 | INFO     | __main__ | Creating table if not exists: real_estate_data.properties_data_history
+2025-12-26 06:22:11 | INFO     | __main__ | Schema and objects verified/created
+2025-12-26 06:22:11 | INFO     | __main__ | Loaded 82 records from CSV
+2025-12-26 06:22:11 | INFO     | __main__ | Columns: 27
+2025-12-26 06:22:11 | INFO     | __main__ | Created temporary file: /tmp/property_history_load.csv
+2025-12-26 06:22:11 | INFO     | __main__ | COPY completed successfully
+2025-12-26 06:22:11 | INFO     | __main__ | Total rows in history table: 246
+2025-12-26 06:22:11 | INFO     | __main__ | Database connection closed
+2025-12-26 06:22:11 | INFO     | __main__ | DATA LOAD COMPLETED SUCCESSFULLY
+2025-12-26 06:22:11 | INFO     | __main__ | Duration: 0:00:00.024558
+2025-12-26 06:22:11 | INFO     | __main__ | Schema: real_estate_data
+2025-12-26 06:22:11 | INFO     | __main__ | History table: properties_data_history
+2025-12-26 06:22:11 | INFO     | __main__ | 
+Query the data with:
+2025-12-26 06:22:12 | INFO     | airflow.cli.commands.task_command | Running <TaskInstance: real_estate_etl_pipeline.send_success_email scheduled__2025-12-25T06:00:00+00:00 [queued]> on host c059e05b2d77
+2025-12-26 06:40:02 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 06:40:02 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 07:31:41 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 07:31:41 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 07:47:42 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 07:47:42 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 08:03:12 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 08:03:12 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 08:37:47 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 08:37:47 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 09:33:17 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 09:33:17 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 09:49:37 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 09:49:37 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 10:37:21 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 10:37:21 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 10:52:49 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 10:52:49 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 11:24:33 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 11:24:33 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 12:16:05 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 12:16:05 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 13:23:31 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 13:23:31 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 13:24:02 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 13:24:02 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 14:30:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 14:30:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 14:41:02 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 14:41:02 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 14:49:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 14:49:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 15:21:51 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 15:21:51 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 15:37:57 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 15:37:57 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 16:45:06 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 16:45:06 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 16:45:36 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 16:45:36 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 16:54:05 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 16:54:05 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 17:12:11 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 17:12:11 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 17:46:23 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 17:46:23 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 17:46:54 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 17:46:54 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
+2025-12-26 18:04:44 | INFO     | airflow.models.dag | Sync 1 DAGs
+2025-12-26 18:04:45 | INFO     | airflow.models.dag | Setting next_dagrun for real_estate_etl_pipeline to 2025-12-26 06:00:00+00:00, run_after=2025-12-27 06:00:00+00:00
