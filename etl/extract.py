@@ -30,9 +30,7 @@ def fetch_zillow(location, max_pages=2):
     all_props = []
     page = 1
 
-    logger.info(
-        f"Starting extraction for location: {location} (max_pages: {max_pages})"
-    )
+    logger.info(f"Starting extraction for location: {location} (max_pages: {max_pages})")
 
     try:
         while page <= max_pages:
@@ -57,16 +55,11 @@ def fetch_zillow(location, max_pages=2):
             json_data = res.json()
 
             if not json_data or "props" not in json_data:
-                logger.warning(
-                    f"No property data in response for {location} page {page}"
-                )
+                logger.warning(f"No property data in response for {location} page {page}")
                 break
 
             props = json_data["props"]
-            logger.info(
-                f"Page {page} fetched successfully - "
-                f"Properties: {len(props)}, Duration: {request_duration}s"
-            )
+            logger.info(f"Page {page} fetched successfully - " f"Properties: {len(props)}, Duration: {request_duration}s")
             all_props.extend(props)
 
             # Pagination logic
@@ -84,10 +77,7 @@ def fetch_zillow(location, max_pages=2):
         df_raw = pd.DataFrame(all_props)
         df_raw["extracted_at"] = datetime.now()
 
-        logger.info(
-            f"Extraction complete for {location} - "
-            f"Total properties: {len(df_raw)}, Pages processed: {page-1}"
-        )
+        logger.info(f"Extraction complete for {location} - " f"Total properties: {len(df_raw)}, Pages processed: {page-1}")
 
         return df_raw
 
@@ -163,16 +153,12 @@ def fetch_all_locations():
     if os.path.exists("/opt/airflow"):
         raw_dir = "/opt/airflow/data/raw"
     else:
-        raw_dir = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "data", "raw"
-        )
+        raw_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "raw")
 
     os.makedirs(raw_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d")
     raw_timestamped = os.path.join(raw_dir, f"raw_{timestamp}.csv")
-    df_combined.to_csv(
-        raw_timestamped, index=False
-    )  # Consider using Polars for optimizing large files
+    df_combined.to_csv(raw_timestamped, index=False)  # Consider using Polars for optimizing large files
     logger.info(f"Saved timestamped file: {raw_timestamped}")
 
     # Save latest file (for transform script to read)

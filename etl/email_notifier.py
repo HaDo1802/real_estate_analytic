@@ -19,9 +19,7 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 # Load environment variables
-load_dotenv(
-    dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
-)
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
 
 class EmailNotifier:
@@ -35,9 +33,7 @@ class EmailNotifier:
         self.sender_password = os.getenv("SENDER_PASSWORD")  # App password for Gmail
         self.recipient_email = os.getenv("RECIPIENT_EMAIL", "havando1802@gmail.com")
 
-        logger.info(
-            f"Email notifier initialized: {self.sender_email} -> {self.recipient_email}"
-        )
+        logger.info(f"Email notifier initialized: {self.sender_email} -> {self.recipient_email}")
 
     def send_notification(self, success: bool, details: dict = None):
         """
@@ -48,16 +44,12 @@ class EmailNotifier:
             details (dict): Additional details about the pipeline run
         """
         if not self.sender_email or not self.sender_password:
-            logger.error(
-                "Email credentials not configured (SENDER_EMAIL or SENDER_PASSWORD missing)"
-            )
+            logger.error("Email credentials not configured (SENDER_EMAIL or SENDER_PASSWORD missing)")
             logger.error("Skipping email notification")
             return False
 
         try:
-            logger.info(
-                f"Preparing {'success' if success else 'failure'} email notification..."
-            )
+            logger.info(f"Preparing {'success' if success else 'failure'} email notification...")
 
             # Create message
             message = MIMEMultipart()
@@ -75,23 +67,17 @@ class EmailNotifier:
             message.attach(MIMEText(body, "html"))
 
             # Send email
-            logger.info(
-                f"Connecting to SMTP server: {self.smtp_server}:{self.smtp_port}"
-            )
+            logger.info(f"Connecting to SMTP server: {self.smtp_server}:{self.smtp_port}")
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
                 server.login(self.sender_email, self.sender_password)
                 server.send_message(message)
 
-            logger.info(
-                f"Email notification sent successfully to {self.recipient_email}"
-            )
+            logger.info(f"Email notification sent successfully to {self.recipient_email}")
             return True
 
         except smtplib.SMTPAuthenticationError:
-            logger.error(
-                "SMTP authentication failed - check SENDER_EMAIL and SENDER_PASSWORD"
-            )
+            logger.error("SMTP authentication failed - check SENDER_EMAIL and SENDER_PASSWORD")
             return False
         except smtplib.SMTPException as e:
             logger.error(f"SMTP error: {str(e)}")

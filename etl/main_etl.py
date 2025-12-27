@@ -58,9 +58,7 @@ def run_etl_pipeline():
 
         logger.info("STAGE 2: TRANSFORM")
         raw_latest = os.path.join(raw_dir, "raw_latest.csv")
-        df_transformed, timestamped_file, latest_file = main_transform(
-            input_file=raw_latest, output_dir=transformed_dir
-        )
+        df_transformed, timestamped_file, latest_file = main_transform(input_file=raw_latest, output_dir=transformed_dir)
 
         if df_transformed is None or df_transformed.empty:
             details["error"] = "No data after transformation"
@@ -82,9 +80,7 @@ def run_etl_pipeline():
         details["duration"] = str(duration).split(".")[0]
         details["quality_rate"] = f"{len(df_transformed)/len(df_extracted)*100:.1f}%"
         logger.info("ETL PIPELINE COMPLETED SUCCESSFULLY")
-        logger.info(
-            f"Duration: {details['duration']} | Quality: {details['quality_rate']}"
-        )
+        logger.info(f"Duration: {details['duration']} | Quality: {details['quality_rate']}")
         return True, details
 
     except Exception as e:

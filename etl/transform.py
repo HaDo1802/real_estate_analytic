@@ -6,12 +6,8 @@ from logger import get_logger
 
 logger = get_logger(__name__)
 
-DEFAULT_INPUT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "data", "raw", "raw_latest.csv")
-)
-DEFAULT_OUTPUT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "data", "transformed")
-)
+DEFAULT_INPUT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "raw", "raw_latest.csv"))
+DEFAULT_OUTPUT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "transformed"))
 
 
 def extract_address_components(address: str) -> dict:
@@ -160,13 +156,9 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
 
         logger.info("Step 1: Extracting address components...")
         if "address" in df_transformed.columns:
-            address_components = df_transformed["address"].apply(
-                extract_address_components
-            )
+            address_components = df_transformed["address"].apply(extract_address_components)
             for component in ["street_address", "city", "state", "zip_code"]:
-                df_transformed[component] = address_components.apply(
-                    lambda x: x.get(component)
-                )
+                df_transformed[component] = address_components.apply(lambda x: x.get(component))
             logger.info("Address components extracted successfully")
         else:
             df_transformed["street_address"] = None
@@ -177,13 +169,9 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
 
         logger.info("Step 2: Extracting listing subtype information...")
         if "listingSubType" in df_transformed.columns:
-            listing_flags = df_transformed["listingSubType"].apply(
-                extract_listing_subtype_info
-            )
+            listing_flags = df_transformed["listingSubType"].apply(extract_listing_subtype_info)
             df_transformed["is_fsba"] = listing_flags.apply(lambda x: x.get("is_fsba"))
-            df_transformed["is_open_house"] = listing_flags.apply(
-                lambda x: x.get("is_open_house")
-            )
+            df_transformed["is_open_house"] = listing_flags.apply(lambda x: x.get("is_open_house"))
             logger.info("Listing subtype flags extracted")
         else:
             df_transformed["is_fsba"] = False
@@ -195,9 +183,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         timestamp_fields = ["datePriceChanged"]
         for field in timestamp_fields:
             if field in df_transformed.columns:
-                df_transformed[field] = df_transformed[field].apply(
-                    convert_unix_timestamp
-                )
+                df_transformed[field] = df_transformed[field].apply(convert_unix_timestamp)
                 logger.info(f"Converted {field} to datetime")
 
         # Add snapshot column
@@ -209,9 +195,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         # Normalize lot area to sqft
         logger.info("Step 5: Normalizing lot area to square feet...")
         df_transformed["Normalized_lotAreaValue"] = df_transformed.apply(
-            lambda row: normalize_lot_area_value(
-                row.get("lotAreaValue"), row.get("lotAreaUnit")
-            ),
+            lambda row: normalize_lot_area_value(row.get("lotAreaValue"), row.get("lotAreaUnit")),
             axis=1,
         )
         df_transformed["lotAreaUnit"] = "sqft"
@@ -220,9 +204,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         # Extract Vegas districts
         logger.info("Step 6: Extracting Vegas districts...")
         df_transformed["vegas_district"] = df_transformed.apply(
-            lambda row: extract_vegas_district(
-                row.get("address", ""), row.get("city", "")
-            ),
+            lambda row: extract_vegas_district(row.get("address", ""), row.get("city", "")),
             axis=1,
         )
         district_counts = df_transformed["vegas_district"].value_counts()
@@ -230,9 +212,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
 
         # Rename zpid to zillow_property_id
         df_final = df_transformed.rename(columns={"zpid": "zillow_property_id"})
-        df_final = df_final.drop(
-            columns=["address", "extraction_location"], errors="ignore"
-        )
+        df_final = df_final.drop(columns=["address", "extraction_location"], errors="ignore")
         # Remove unnecessary columns
         logger.info("Step 7: Removing unnecessary columns...")
         columns_to_delete = [
@@ -258,9 +238,7 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         removed_count = before_filter - len(df_final)
 
         if removed_count > 0:
-            logger.warning(
-                f"Removed {removed_count} records with missing critical fields"
-            )
+            logger.warning(f"Removed {removed_count} records with missing critical fields")
         else:
             logger.info("All records passed essential field validation")
 

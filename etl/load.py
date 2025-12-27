@@ -75,16 +75,10 @@ def ensure_schema_and_objects(conn):
     cur = conn.cursor()
     # Create schema
     logger.info(f"Creating schema if not exists: {config.DEFAULT_SCHEMA}")
-    cur.execute(
-        sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(
-            sql.Identifier(config.DEFAULT_SCHEMA)
-        )
-    )
+    cur.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(sql.Identifier(config.DEFAULT_SCHEMA)))
 
     # Create history table
-    logger.info(
-        f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}"
-    )
+    logger.info(f"Creating table if not exists: {config.DEFAULT_SCHEMA}.{HISTORY_TABLE}")
     cur.execute(
         sql.SQL(
             f"""
@@ -126,7 +120,6 @@ def ensure_schema_and_objects(conn):
         )
     )
 
-
     conn.commit()
     cur.close()
     logger.info("Schema and objects verified/created")
@@ -151,9 +144,7 @@ def load_csv(csv_file=DEFAULT_FILE):
             raise FileNotFoundError(f"CSV file not found: {csv_file}")
 
         df = pd.read_csv(csv_file)[ORDERED_COLS]
-        df["snapshot_date"] = pd.to_datetime(
-            df["snapshot_date"].astype(str), format="%Y%m%d"
-        ).dt.date
+        df["snapshot_date"] = pd.to_datetime(df["snapshot_date"].astype(str), format="%Y%m%d").dt.date
         logger.info(f"Loaded {len(df)} records from CSV")
         logger.info(f"Columns: {len(df.columns)}")
 
@@ -174,9 +165,7 @@ def load_csv(csv_file=DEFAULT_FILE):
         conn.commit()
 
         cur.execute(
-            sql.SQL("SELECT COUNT(*) FROM {}.{}").format(
-                sql.Identifier(config.DEFAULT_SCHEMA), sql.Identifier(HISTORY_TABLE)
-            )
+            sql.SQL("SELECT COUNT(*) FROM {}.{}").format(sql.Identifier(config.DEFAULT_SCHEMA), sql.Identifier(HISTORY_TABLE))
         )
         total_rows = cur.fetchone()[0]
 

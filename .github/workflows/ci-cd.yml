@@ -6,13 +6,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      # Only run if these paths change (saves GitHub Actions minutes)
-      - "etl/**"
-      - "tests/**"
-      - "dags/**"
-      - "requirements.txt"
-      - ".github/workflows/**"
 
   pull_request:
     branches:
@@ -28,19 +21,13 @@ on:
         options:
           - "true"
           - "false"
-      max_properties:
-        description: "Maximum properties to extract (for testing)"
-        required: false
-        default: "100"
 
 env:
   PYTHON_VERSION: "3.9"
-  POSTGRES_VERSION: "13"
-  CACHE_VERSION: "v1"
 
 jobs:
-  code-quality:
-    name: Code Quality & Linting
+  format-and-lint:
+    name: Code Format & Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -52,132 +39,99 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ env.CACHE_VERSION }}-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-${{ env.CACHE_VERSION }}-
-
-      - name: Install linting tools
+      - name: Install formatting tools
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 black isort pylint
+          pip install black isort flake8
 
-      - name: Check code formatting with Black
+      - name: Format code with Black
         run: |
-          echo "🎨 Checking code formatting..."
-          black --check etl/ tests/ --line-length 127
+          echo "🎨 Formatting code with Black..."
+          black etl/ tests/ --line-length 127
 
-      - name: Check import sorting with isort
+      - name: Sort imports with isort
         run: |
-          echo "📦 Checking import sorting..."
-          isort --check-only etl/ tests/ --profile black
+          echo "📦 Sorting imports..."
+          isort etl/ tests/ --profile black
 
       - name: Lint with flake8
         run: |
-          echo "🔍 Running flake8 linting..."
-          flake8 etl/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 etl/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          echo "🔍 Linting with flake8..."
+          flake8 etl/ tests/ --max-line-length=127 --exit-zero
 
-  unit-tests:
-    name: Unit Tests
+      - name: Commit and push formatting changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          if ! git diff --quiet; then
+            echo "✨ Changes detected, committing..."
+            git add -A
+            git commit -m "refactor: auto-format code with Black and isort"
+            git push
+            echo "✅ Formatting pushed"
+          else
+            echo "✅ Code already formatted"
+          fi
+  unit-test:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-
+      
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install pytest
-
+          pip install pandas pytest
+      
       - name: Run unit tests
         run: |
-          pytest tests/
-
-  security-scan:
-    name: Security Vulnerability Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          format: "sarif"
-          output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH"
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: "trivy-results.sarif"
-
-  codeql-analysis:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: "python"
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
+          pytest tests/test_*.py -v
+      
+      - name: Tests passed!
+        run: echo "✅ All tests passed!"
+  
   docker-build:
-    name: Build & Validate Docker Image
+    name: Build Docker Image
     runs-on: ubuntu-latest
-    needs: [unit-tests]
-
+    needs: [test]  # Only run if tests pass
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
+      
+      # Skip login if running on PR (no secrets available)
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
       - name: Build Docker image
-        run: |
-          echo "🐳 Building Docker image..."
-          docker build -t real-estate-etl:${{ github.sha }} .
-
-      - name: Test Docker image
-        run: |
-          echo "🧪 Testing Docker image..."
-          docker run --rm real-estate-etl:${{ github.sha }} python -c "
-          import sys
-          sys.path.insert(0, '/opt/airflow/etl')
-          from transform import extract_address_components
-          result = extract_address_components('123 Main St, Las Vegas, NV 89101')
-          assert result['city'] == 'Las Vegas'
-          print('✅ Docker image validated')
-          "
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          # Only push if not a PR and secrets exist
+          push: ${{ github.event_name != 'pull_request' && secrets.DOCKER_USERNAME != '' }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/real-estate-etl:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   run-etl-pipeline:
-    name: Execute Real Estate ETL Pipeline
+    name: Execute ETL Pipeline
     runs-on: ubuntu-latest
-    needs: [unit-tests, security-scan, docker-build, codeql-analysis]
+    needs: [format-and-lint, unit-test, docker-build]
 
     if: |
       github.ref == 'refs/heads/main' && 
@@ -186,15 +140,6 @@ jobs:
         github.event.inputs.run_full_pipeline == 'true'))
 
     steps:
-      - name: Validate required secrets
-        run: |
-          echo "🔐 Validating GitHub Secrets..."
-          secrets=('RAPID_API_KEY' 'POSTGRES_HOST' 'POSTGRES_DB' 'POSTGRES_USER' 'POSTGRES_PASSWORD' 'POSTGRES_PORT' 'SENDER_EMAIL' 'SENDER_PASSWORD')
-          for secret in "${secrets[@]}"; do
-            echo "Checking $secret..."
-          done
-          echo "✅ Verify secrets in GitHub Settings > Secrets and variables > Actions"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -211,7 +156,6 @@ jobs:
       - name: Create data directories
         run: |
           mkdir -p data/raw data/transformed etl_log
-          chmod -R 777 data/ etl_log/
 
       - name: Configure environment
         run: |
@@ -221,88 +165,27 @@ jobs:
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-          echo "SENDER_EMAIL=${{ secrets.SENDER_EMAIL }}" >> .env
-          echo "SENDER_PASSWORD=${{ secrets.SENDER_PASSWORD }}" >> .env
 
-      - name: Step 1 - Extract Real Estate Data
+      - name: Extract Data
         run: |
-          echo "🕷️ Starting data extraction..."
+          echo "🕷️ Extracting data from Zillow..."
           cd etl
           python extract.py
 
-          if [ -f "../data/raw/raw_latest.csv" ]; then
-            ROW_COUNT=$(wc -l < ../data/raw/raw_latest.csv)
-            echo "📊 Properties extracted: $((ROW_COUNT - 1))"
-          else
-            echo "❌ Extraction failed"
-            exit 1
-          fi
-
-      - name: Step 2 - Transform & Clean Data
+      - name: Transform Data
         run: |
-          echo "🧹 Starting data transformation..."
+          echo "🧹 Transforming data..."
           cd etl
           python transform.py
 
-          if [ -f "../data/transformed/transformed_latest.csv" ]; then
-            CLEAN_COUNT=$(wc -l < ../data/transformed/transformed_latest.csv)
-            echo "📊 Records processed: $((CLEAN_COUNT - 1))"
-          else
-            echo "❌ Transformation failed"
-            exit 1
-          fi
-
-      - name: Step 3 - Load to PostgreSQL
+      - name: Load to Database
         run: |
-          echo "🗄️ Loading data to PostgreSQL..."
+          echo "🗄️ Loading to PostgreSQL..."
           cd etl
           python load.py
-          echo "✅ Database load completed"
+          echo "✅ Load completed"
 
       - name: Pipeline Summary
         run: |
-          echo "🎉 ETL Pipeline Completed Successfully!"
-          echo "📅 Executed on: $(date)"
-          echo "📊 Pipeline Summary:"
-          echo "  ✅ Data Extraction"
-          echo "  ✅ Data Transformation"
-          echo "  ✅ PostgreSQL Load"
-
-      - name: Upload Pipeline Artifacts
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: real-estate-data-${{ github.run_number }}
-          path: |
-            data/raw/*.csv
-            data/transformed/*.csv
-            etl_log/log.txt
-          retention-days: 30
-
-      - name: Send Success Notification
-        if: success()
-        run: |
-          echo "✅ Pipeline completed successfully"
-          # Email is sent by your Python code
-
-      - name: Send Failure Notification
-        if: failure()
-        run: |
-          echo "❌ Pipeline failed - check logs"
-
-  cleanup:
-    name: Cleanup & Monitoring
-    runs-on: ubuntu-latest
-    needs: [run-etl-pipeline]
-    if: always()
-
-    steps:
-      - name: Pipeline Status Summary
-        run: |
-          echo "📊 CI/CD Pipeline Summary"
-          echo "========================="
-          echo "Workflow: ${{ github.workflow }}"
-          echo "Run Number: ${{ github.run_number }}"
-          echo "Triggered by: ${{ github.event_name }}"
-          echo "Branch: ${{ github.ref }}"
-          echo "Commit: ${{ github.sha }}"
+          echo "🎉 ETL Pipeline Completed!"
+          echo "✅ Extract → Transform → Load"

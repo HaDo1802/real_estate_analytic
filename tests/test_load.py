@@ -9,52 +9,42 @@ import pandas as pd
 def test_prepare_data_for_database():
     """Test preparing DataFrame for database insert."""
     # Arrange: Create sample data
-    data = {
-        'zpid': ['123', '456'],
-        'price': [350000, 425000],
-        'bedrooms': [3, 4]
-    }
+    data = {"zpid": ["123", "456"], "price": [350000, 425000], "bedrooms": [3, 4]}
     df = pd.DataFrame(data)
-    
+
     # Act: Get column names
     columns = list(df.columns)
-    
+
     # Assert: Should have expected columns
-    assert 'zpid' in columns
-    assert 'price' in columns
-    assert 'bedrooms' in columns
+    assert "zpid" in columns
+    assert "price" in columns
+    assert "bedrooms" in columns
 
 
 def test_convert_dataframe_to_dict():
     """Test converting DataFrame rows to dictionaries."""
     # Arrange: Create sample data
-    data = {
-        'zpid': ['123'],
-        'price': [350000]
-    }
+    data = {"zpid": ["123"], "price": [350000]}
     df = pd.DataFrame(data)
-    
+
     # Act: Convert first row to dict
     row_dict = df.iloc[0].to_dict()
-    
+
     # Assert: Should be a dictionary
     assert isinstance(row_dict, dict)
-    assert row_dict['zpid'] == '123'
-    assert row_dict['price'] == 350000
+    assert row_dict["zpid"] == "123"
+    assert row_dict["price"] == 350000
 
 
 def test_count_rows_to_insert():
     """Test counting how many rows will be inserted."""
     # Arrange: Create sample data
-    data = {
-        'zpid': ['123', '456', '789'],
-        'price': [350000, 425000, 500000]
-    }
+    data = {"zpid": ["123", "456", "789"], "price": [350000, 425000, 500000]}
     df = pd.DataFrame(data)
-    
+
     # Act: Count rows
     row_count = len(df)
-    
+
     # Assert: Should have 3 rows
     assert row_count == 3
 
@@ -62,32 +52,26 @@ def test_count_rows_to_insert():
 def test_replace_none_with_null():
     """Test replacing Python None with database NULL."""
     # Arrange: Data with None values
-    data = {
-        'zpid': ['123', '456'],
-        'city': ['Las Vegas', None]
-    }
+    data = {"zpid": ["123", "456"], "city": ["Las Vegas", None]}
     df = pd.DataFrame(data)
-    
+
     # Act: Replace None with special marker
     df_cleaned = df.where(pd.notna(df), None)
-    
+
     # Assert: Second city should still be None
-    assert df_cleaned.iloc[1]['city'] is None
+    assert df_cleaned.iloc[1]["city"] is None
 
 
 def test_create_csv_for_database():
     """Test creating CSV file (like for COPY command)."""
     # Arrange: Sample data
-    data = {
-        'zpid': ['123', '456'],
-        'price': [350000, 425000]
-    }
+    data = {"zpid": ["123", "456"], "price": [350000, 425000]}
     df = pd.DataFrame(data)
-    
+
     # Act: Convert to CSV string
     csv_string = df.to_csv(index=False)
-    
+
     # Assert: Should contain data
-    assert 'zpid,price' in csv_string
-    assert '123,350000' in csv_string
-    assert '456,425000' in csv_string
+    assert "zpid,price" in csv_string
+    assert "123,350000" in csv_string
+    assert "456,425000" in csv_string
