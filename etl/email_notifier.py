@@ -5,20 +5,17 @@ Email Notification Module for ETL Pipeline
 Sends email notifications about ETL pipeline success/failure status.
 """
 
-import smtplib
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import smtplib
 from datetime import datetime
-from dotenv import load_dotenv
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
-# Import centralized logger
+from dotenv import load_dotenv
 from logger import get_logger
 
-# Initialize logger for this module
 logger = get_logger(__name__)
 
-# Load environment variables
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
 
@@ -30,19 +27,13 @@ class EmailNotifier:
         self.smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.sender_email = os.getenv("SENDER_EMAIL")
-        self.sender_password = os.getenv("SENDER_PASSWORD")  # App password for Gmail
+        self.sender_password = os.getenv("SENDER_PASSWORD")
         self.recipient_email = os.getenv("RECIPIENT_EMAIL", "havando1802@gmail.com")
 
         logger.info(f"Email notifier initialized: {self.sender_email} -> {self.recipient_email}")
 
     def send_notification(self, success: bool, details: dict = None):
-        """
-        Send email notification about ETL pipeline result.
-
-        Args:
-            success (bool): Whether the ETL pipeline succeeded
-            details (dict): Additional details about the pipeline run
-        """
+        """Send email notification about ETL pipeline result."""
         if not self.sender_email or not self.sender_password:
             logger.error("Email credentials not configured (SENDER_EMAIL or SENDER_PASSWORD missing)")
             logger.error("Skipping email notification")
@@ -51,7 +42,6 @@ class EmailNotifier:
         try:
             logger.info(f"Preparing {'success' if success else 'failure'} email notification...")
 
-            # Create message
             message = MIMEMultipart()
             message["From"] = self.sender_email
             message["To"] = self.recipient_email
@@ -66,7 +56,6 @@ class EmailNotifier:
             message["Subject"] = subject
             message.attach(MIMEText(body, "html"))
 
-            # Send email
             logger.info(f"Connecting to SMTP server: {self.smtp_server}:{self.smtp_port}")
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
@@ -88,128 +77,106 @@ class EmailNotifier:
 
     def _create_success_email_body(self, details: dict = None) -> str:
         """Create HTML email body for successful pipeline run."""
-        if details is None:
-            details = {}
+        details = details or {}
 
-        html_body = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                .header {{ background-color: #28a745; color: white; padding: 20px; border-radius: 5px; }}
-                .content {{ padding: 20px; }}
-                .metric {{ background-color: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #28a745; }}
-                .metric-label {{ font-weight: bold; color: #666; }}
-                .metric-value {{ font-size: 18px; color: #28a745; }}
-                .footer {{ font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }}
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h2>🎉 Real Estate ETL Pipeline Completed Successfully!</h2>
-            </div>
-            
-            <div class="content">
-                <p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>
-                <p><strong>Execution Time:</strong> {details.get('end_time', 'N/A')}</p>
-                
-                <h3>Pipeline Metrics:</h3>
-                
-                <div class="metric">
-                    <div class="metric-label">Properties Extracted</div>
-                    <div class="metric-value">{details.get('properties_extracted', 'N/A')}</div>
-                </div>
-                
-                <div class="metric">
-                    <div class="metric-label">Records Loaded to Database</div>
-                    <div class="metric-value">{details.get('records_loaded', 'N/A')}</div>
-                </div>
-                
-                <div class="metric">
-                    <div class="metric-label">Data Quality Pass Rate</div>
-                    <div class="metric-value">{details.get('quality_rate', 'N/A')}</div>
-                </div>
-                
-                <div class="metric">
-                    <div class="metric-label">Total Duration</div>
-                    <div class="metric-value">{details.get('duration', 'N/A')}</div>
-                </div>
-                
-                <h3>Next Steps:</h3>
-                <p>Your real estate data has been successfully extracted, transformed, and loaded into the database.</p>
-                <p>You can now query the data using:</p>
-                <pre style="background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
-SELECT COUNT(*) FROM real_estate_data.properties_data_history;
-SELECT * FROM real_estate_data.properties_data_current LIMIT 10;</pre>
-            </div>
-            
-            <div class="footer">
-                <p>This is an automated message from your Real Estate ETL Pipeline.</p>
-                <p>Environment: {details.get('environment', 'N/A')}</p>
-            </div>
-        </body>
-        </html>
-        """
+        html_body = (
+            "<html>"
+            "<head>"
+            "<style>"
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }"
+            ".header { background-color: #28a745; color: white; padding: 20px; border-radius: 5px; }"
+            ".content { padding: 20px; }"
+            ".metric { background-color: #f8f9fa; padding: 15px; margin: 10px 0; "
+            "border-left: 4px solid #28a745; }"
+            ".metric-label { font-weight: bold; color: #666; }"
+            ".metric-value { font-size: 18px; color: #28a745; }"
+            ".footer { font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; "
+            "border-top: 1px solid #ddd; }"
+            "</style>"
+            "</head>"
+            "<body>"
+            "<div class='header'><h2>🎉 Real Estate ETL Pipeline Completed Successfully!</h2></div>"
+            "<div class='content'>"
+            f"<p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>"
+            f"<p><strong>Execution Time:</strong> {details.get('end_time', 'N/A')}</p>"
+            "<h3>Pipeline Metrics:</h3>"
+            "<div class='metric'><div class='metric-label'>Properties Extracted</div>"
+            f"<div class='metric-value'>{details.get('properties_extracted', 'N/A')}</div></div>"
+            "<div class='metric'><div class='metric-label'>Records Loaded to Database</div>"
+            f"<div class='metric-value'>{details.get('records_loaded', 'N/A')}</div></div>"
+            "<div class='metric'><div class='metric-label'>Data Quality Pass Rate</div>"
+            f"<div class='metric-value'>{details.get('quality_rate', 'N/A')}</div></div>"
+            "<div class='metric'><div class='metric-label'>Total Duration</div>"
+            f"<div class='metric-value'>{details.get('duration', 'N/A')}</div></div>"
+            "<h3>Next Steps:</h3>"
+            "<p>Your real estate data has been successfully extracted, transformed, and loaded.</p>"
+            "<pre style='background-color: #f8f9fa; padding: 10px; border-radius: 5px;'>"
+            "SELECT COUNT(*) FROM real_estate_data.properties_data_history;\n"
+            "SELECT * FROM real_estate_data.properties_data_current LIMIT 10;"
+            "</pre>"
+            "</div>"
+            "<div class='footer'>"
+            "<p>This is an automated message from your Real Estate ETL Pipeline.</p>"
+            f"<p>Environment: {details.get('environment', 'N/A')}</p>"
+            "</div>"
+            "</body>"
+            "</html>"
+        )
         return html_body
 
     def _create_failure_email_body(self, details: dict = None) -> str:
         """Create HTML email body for failed pipeline run."""
-        if details is None:
-            details = {}
+        details = details or {}
 
-        html_body = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                .header {{ background-color: #dc3545; color: white; padding: 20px; border-radius: 5px; }}
-                .content {{ padding: 20px; }}
-                .error-box {{ background-color: #f8d7da; border: 1px solid #dc3545; padding: 15px; margin: 15px 0; border-radius: 5px; }}
-                .info {{ background-color: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #dc3545; }}
-                .footer {{ font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }}
-                ol {{ line-height: 2; }}
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h2>⚠️ Real Estate ETL Pipeline Failed</h2>
-            </div>
-            
-            <div class="content">
-                <p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>
-                <p><strong>Execution Time:</strong> {details.get('start_time', 'N/A')}</p>
-                <p><strong>Duration Before Failure:</strong> {details.get('total_execution_time', 'N/A')}</p>
-                
-                <div class="error-box">
-                    <p><strong>Failed Step:</strong> {details.get('failed_step', 'UNKNOWN')}</p>
-                    <p><strong>Error Message:</strong></p>
-                    <p style="font-family: monospace; color: #721c24;">{details.get('error', 'Unknown error occurred')}</p>
-                </div>
-                
-                <div class="info">
-                    <p><strong>Environment:</strong> {details.get('environment', 'N/A')}</p>
-                    {f"<p><strong>Properties Extracted:</strong> {details.get('properties_extracted', 'N/A')}</p>" if 'properties_extracted' in details else ''}
-                </div>
-                
-                <h3>🔧 Troubleshooting Steps:</h3>
-                <ol>
-                    <li>Check the pipeline logs: <code>etl/log.txt</code></li>
-                    <li>Verify API key is valid in <code>.env</code> file</li>
-                    <li>Ensure database connection is working</li>
-                    <li>Check internet connectivity</li>
-                    <li>Verify Zillow API is responding</li>
-                </ol>
-                
-                <p style="color: #dc3545; font-weight: bold;">⚠️ Action Required: Please investigate and resolve the issue.</p>
-            </div>
-            
-            <div class="footer">
-                <p>This is an automated message from your Real Estate ETL Pipeline.</p>
-                <p>If this issue persists, review the error logs and configuration settings.</p>
-            </div>
-        </body>
-        </html>
-        """
+        html_body = (
+            "<html>"
+            "<head>"
+            "<style>"
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }"
+            ".header { background-color: #dc3545; color: white; padding: 20px; border-radius: 5px; }"
+            ".content { padding: 20px; }"
+            ".error-box { background-color: #f8d7da; border: 1px solid #dc3545; padding: 15px; "
+            "margin: 15px 0; border-radius: 5px; }"
+            ".info { background-color: #f8f9fa; padding: 15px; margin: 10px 0; "
+            "border-left: 4px solid #dc3545; }"
+            ".footer { font-size: 12px; color: #666; margin-top: 30px; padding-top: 20px; "
+            "border-top: 1px solid #ddd; }"
+            "ol { line-height: 2; }"
+            "</style>"
+            "</head>"
+            "<body>"
+            "<div class='header'><h2>⚠️ Real Estate ETL Pipeline Failed</h2></div>"
+            "<div class='content'>"
+            f"<p><strong>ETL Run ID:</strong> {details.get('etl_run_id', 'N/A')}</p>"
+            f"<p><strong>Execution Time:</strong> {details.get('start_time', 'N/A')}</p>"
+            f"<p><strong>Duration Before Failure:</strong> {details.get('total_execution_time', 'N/A')}</p>"
+            "<div class='error-box'>"
+            f"<p><strong>Failed Step:</strong> {details.get('failed_step', 'UNKNOWN')}</p>"
+            "<p><strong>Error Message:</strong></p>"
+            f"<p style='font-family: monospace; color: #721c24;'>"
+            f"{details.get('error', 'Unknown error occurred')}</p>"
+            "</div>"
+            "<div class='info'>"
+            f"<p><strong>Environment:</strong> {details.get('environment', 'N/A')}</p>"
+            f"{f'<p><strong>Properties Extracted:</strong> {details.get('properties_extracted', 'N/A')}</p>' if 'properties_extracted' in details else ''}"
+            "</div>"
+            "<h3>🔧 Troubleshooting Steps:</h3>"
+            "<ol>"
+            "<li>Check the pipeline logs: <code>etl/log.txt</code></li>"
+            "<li>Verify API key is valid in <code>.env</code></li>"
+            "<li>Ensure database connection is working</li>"
+            "<li>Check internet connectivity</li>"
+            "<li>Verify Zillow API is responding</li>"
+            "</ol>"
+            "<p style='color: #dc3545; font-weight: bold;'>⚠️ Action Required: Please investigate.</p>"
+            "</div>"
+            "<div class='footer'>"
+            "<p>This is an automated message from your Real Estate ETL Pipeline.</p>"
+            "<p>If this issue persists, review the error logs and configuration settings.</p>"
+            "</div>"
+            "</body>"
+            "</html>"
+        )
         return html_body
 
 
@@ -232,15 +199,9 @@ def send_test_email():
     success = notifier.send_notification(success=True, details=test_details)
 
     if success:
-        logger.info("✅ Test email sent successfully!")
-        logger.info("Check your inbox to verify the email format")
+        logger.info("Test email sent successfully")
     else:
-        logger.error("❌ Failed to send test email")
-        logger.error("Check your .env file for correct email configuration:")
-        logger.error("  - SENDER_EMAIL")
-        logger.error("  - SENDER_PASSWORD (use App Password for Gmail)")
-        logger.error("  - SMTP_SERVER (default: smtp.gmail.com)")
-        logger.error("  - SMTP_PORT (default: 587)")
+        logger.error("Failed to send test email")
 
 
 if __name__ == "__main__":

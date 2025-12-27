@@ -1,14 +1,17 @@
-import requests
 import os
-import time
-import pandas as pd
-from datetime import datetime
 import sys
-from logger import get_logger
+import time
+from datetime import datetime
+
+import pandas as pd
+import requests
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(PROJECT_ROOT)
-from utils.config import config
+sys.path.insert(0, PROJECT_ROOT)
+
+from logger import get_logger  # noqa: E402
+
+from utils.config import config  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -72,12 +75,12 @@ def fetch_zillow(location, max_pages=2):
             time.sleep(0.2)
 
         if not all_props:
-            logger.error(f"No data extracted from {location} after {page-1} page(s)")
+            logger.error(f"No data extracted from {location} after {page - 1} page(s)")
             return pd.DataFrame()
         df_raw = pd.DataFrame(all_props)
         df_raw["extracted_at"] = datetime.now()
 
-        logger.info(f"Extraction complete for {location} - " f"Total properties: {len(df_raw)}, Pages processed: {page-1}")
+        logger.info(f"Extraction complete for {location} - " f"Total properties: {len(df_raw)}, Pages processed: {page - 1}")
 
         return df_raw
 

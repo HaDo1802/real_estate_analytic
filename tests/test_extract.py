@@ -3,8 +3,9 @@ BEGINNER TEST: Simple tests for extract functions
 NO MOCKING - Just testing basic logic
 """
 
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
 
 
 def test_dataframe_creation():

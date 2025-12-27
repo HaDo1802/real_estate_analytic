@@ -1,7 +1,8 @@
-import os
-import pandas as pd
 import json
+import os
 from datetime import datetime, timezone
+
+import pandas as pd
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -259,14 +260,14 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         logger.info(f"Input file: {os.path.basename(input_file)}")
         logger.info(f"Initial records: {initial_count}")
         logger.info(f"Final records: {final_count}")
-        logger.info(
-            f"Records filtered: {initial_count - final_count} ({(initial_count - final_count)/initial_count*100:.1f}%)"
-        )
+        filtered_count = initial_count - final_count
+        filter_rate = (filtered_count / initial_count) * 100
+        logger.info(f"Records filtered: {filtered_count} ({filter_rate:.1f}%)")
         logger.info(f"Output directory: {output_dir}")
 
         return df_final, timestamped_file, latest_file
 
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         logger.error(f"Input file not found: {input_file}")
         raise
     except Exception as e:

@@ -1,14 +1,14 @@
-import sys
 import os
-import pandas as pd
+import sys
 from datetime import datetime
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from extract import fetch_all_locations
-from transform import main_transform
-from load import load_csv
-from logger import get_logger
-from email_notifier import EmailNotifier
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from email_notifier import EmailNotifier  # noqa: E402
+from extract import fetch_all_locations  # noqa: E402
+from load import load_csv  # noqa: E402
+from logger import get_logger  # noqa: E402
+from transform import main_transform  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -66,7 +66,7 @@ def run_etl_pipeline():
             return False, details
 
         details["records_transformed"] = len(df_transformed)
-        logger.info(f"TRANSFORM COMPLETED")
+        logger.info("TRANSFORM COMPLETED")
 
         logger.info("STAGE 3: LOAD")
         load_csv(csv_file=latest_file)
@@ -78,7 +78,8 @@ def run_etl_pipeline():
 
         details["end_time"] = end_time.strftime("%Y-%m-%d %H:%M:%S")
         details["duration"] = str(duration).split(".")[0]
-        details["quality_rate"] = f"{len(df_transformed)/len(df_extracted)*100:.1f}%"
+        quality_rate = (len(df_transformed) / len(df_extracted)) * 100
+        details["quality_rate"] = f"{quality_rate:.1f}%"
         logger.info("ETL PIPELINE COMPLETED SUCCESSFULLY")
         logger.info(f"Duration: {details['duration']} | Quality: {details['quality_rate']}")
         return True, details

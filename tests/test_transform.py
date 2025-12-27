@@ -1,17 +1,17 @@
-import sys
 import os
+import sys
 
 # Fix imports
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "etl"))
 
-from transform import (
-    extract_address_components,
+from transform import (  # noqa: E402
     convert_unix_timestamp,
-    normalize_lot_area_value,
-    extract_vegas_district,
+    extract_address_components,
     extract_listing_subtype_info,
+    extract_vegas_district,
+    normalize_lot_area_value,
 )
 
 

@@ -1,49 +1,31 @@
+import logging
 from datetime import datetime, timedelta
-import logging
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.operators.bash import BashOperator
-from airflow.operators.email import EmailOperator
-from airflow.models import Variable
-from airflow.utils.dates import days_ago
 
-import sys
-import os
-import logging
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
+
+from etl.email_notifier import EmailNotifier
 
 # Add ETL directory to Python path
-sys.path.append("/opt/airflow/etl")
-
-# Import your ETL modules
-from main_etl import run_etl_pipeline
-from load import load_csv
-from email_notifier import EmailNotifier
+# sys.path.insert(0, "/opt/airflow")
 
 
 def send_success_notification(**context):
     """Send success notification with pipeline metrics."""
     try:
         # Get pipeline metrics from XCom or calculate
-        records_processed = (
-            context["task_instance"].xcom_pull(
-                task_ids="upload_cleaned_data_to_postgres"
-            )
-            or "Unknown"
-        )
+        records_processed = context["task_instance"].xcom_pull(task_ids="upload_cleaned_data_to_postgres") or "Unknown"
 
         # Calculate duration using task instance timing
         task_instance = context["task_instance"]
         if task_instance.start_date and task_instance.end_date:
-            duration = str(task_instance.end_date - task_instance.start_date).split(
-                "."
-            )[0]
+            duration = str(task_instance.end_date - task_instance.start_date).split(".")[0]
         else:
             # Fallback: calculate from data interval
             start_time = context["data_interval_start"]
             # Convert to string and back to datetime to make timezone-naive
-            start_naive = datetime.strptime(
-                start_time.strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"
-            )
+            start_naive = datetime.strptime(start_time.strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
             end_naive = datetime.now()
             duration = str(end_naive - start_naive).split(".")[0]
 
@@ -62,9 +44,7 @@ def send_success_notification(**context):
         success = notifier.send_notification(success=True, details=details)
 
         if not success:
-            logging.warning(
-                "Email notification failed, but pipeline completed successfully"
-            )
+            logging.warning("Email notification failed, but pipeline completed successfully")
         else:
             logging.info("Success notification sent successfully")
 

@@ -1,15 +1,17 @@
 import os
 import sys
+from datetime import datetime
+
 import pandas as pd
 import psycopg2
 from psycopg2 import sql
-from datetime import datetime
-from logger import get_logger
-import datetime as dt
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(PROJECT_ROOT)
-from utils.config import config
+sys.path.insert(0, PROJECT_ROOT)
+
+from logger import get_logger  # noqa: E402
+
+from utils.config import config  # noqa: E402
 
 # Initialize logger for this module
 logger = get_logger(__name__)
@@ -169,7 +171,7 @@ def load_csv(csv_file=DEFAULT_FILE):
         )
         total_rows = cur.fetchone()[0]
 
-        logger.info(f"COPY completed successfully")
+        logger.info("COPY completed successfully")
         logger.info(f"Total rows in history table: {total_rows}")
 
     except FileNotFoundError as e:
