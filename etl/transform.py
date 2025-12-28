@@ -147,14 +147,6 @@ def main_transform(input_file=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT_DIR):
         logger.info(f"Columns found: {len(df.columns)}")
 
         df_transformed = df.copy()
-        is_docker = os.path.exists("/opt/airflow")
-        if not is_docker:
-            df_transformed = pd.read_csv(
-                "/Users/hado/Desktop/Career/Coding/Data Engineer/Project/real_estate_project/data/raw/raw_latest.csv"
-            )
-        else:
-            df_transformed = pd.read_csv("/opt/airflow/data/raw/raw_latest.csv")
-
         logger.info("Step 1: Extracting address components...")
         if "address" in df_transformed.columns:
             address_components = df_transformed["address"].apply(extract_address_components)
