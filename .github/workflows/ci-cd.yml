@@ -139,7 +139,6 @@ jobs:
           echo "RAPID_API_KEY=${{ secrets.RAPID_API_KEY }}" > .env
 
           # PostgreSQL credentials from GitHub Secrets
-          # Using LOCAL variables because GitHub Actions is NOT Docker environment
           echo "POSTGRES_HOST_LOCAL=${{ secrets.POSTGRES_HOST }}" >> .env
           echo "POSTGRES_DB_LOCAL=${{ secrets.POSTGRES_DB }}" >> .env
           echo "POSTGRES_USER_LOCAL=${{ secrets.POSTGRES_USER }}" >> .env
@@ -148,8 +147,10 @@ jobs:
 
           # Schema name
           echo "DEFAULT_SCHEMA=real_estate_data" >> .env
-          
-          echo "✅ Environment configured to connect to: ${{ secrets.POSTGRES_HOST }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }}"      - name: Step 1 - Extract Real Estate Data
+
+          echo "✅ Environment configured to connect to: ${{ secrets.POSTGRES_HOST }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }}"
+
+      - name: Step 1 - Extract Real Estate Data
         run: |
           echo "🕷️ Starting Zillow data extraction..."
           cd etl
