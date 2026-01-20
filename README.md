@@ -1,5 +1,6 @@
+[![Real Estate ETL Pipeline CI/CD](https://github.com/HaDo1802/zillow_data_extract/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/HaDo1802/zillow_data_extract/actions/workflows/ci-cd.yml)
 # Real Estate Data Pipeline
-
+![Real Estate Data Pipeline Cover Image](image/cover_image.png)
 This project implements a Extract-Transform-Load (ETL) pipeline for real estate listings data, designed to process and analyze real-time property listings. The pipeline extracts property data from Zillow API, leveraging Apache Airflow, PostgreSQL, and Docker to automate data collection and storage for downstream analytics and machine learning applications.
 
 ---
@@ -41,6 +42,11 @@ This project implements a Extract-Transform-Load (ETL) pipeline for real estate 
 ---
 
 ## 🧱 Data Architecture
+```markdown
+Zillow API --> Raw CSV --> PostgreSQL--> Current Snapshot-> Email Notification
+```
+
+![Architecture](image/architecture_udpate.png)
 
 ### 1. Data Source
 The project processes real estate listings from the **Zillow API** via [RapidAPI](https://rapidapi.com/apimaker/api/zillow-com1/playground), focusing on the Las Vegas market with plans to expand to additional locations. Current extraction targets multiple neighborhoods including **Summerlin, Henderson, Downtown Las Vegas, and surrounding areas**.
