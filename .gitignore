@@ -31,3 +31,6 @@ docker-compose.override.yml
 
 learning_note.txt
 notebook.ipynb
+
+.ruff_cache/
+.pytest_cache/
