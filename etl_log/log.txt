@@ -1070,3 +1070,6 @@ Query the data with:
 2026-01-20 21:11:36 | INFO     | email_notifier | Preparing success email notification...
 2026-01-20 21:11:36 | INFO     | email_notifier | Connecting to SMTP server: smtp.gmail.com:587
 2026-01-20 21:11:38 | INFO     | email_notifier | Email notification sent successfully to havando1802@gmail.com
+2026-01-24 12:29:32 | INFO     | botocore.credentials | Found credentials in environment variables.
+2026-01-24 12:29:33 | INFO     | __main__ | File data/raw/raw_latest.csv uploaded to s3://real-estate-scraped-data/raw/raw_latest.csv
+2026-01-24 12:29:33 | INFO     | __main__ | File data/transformed/transformed_latest.csv uploaded to s3://real-estate-scraped-data/transformed/transformed_latest.csv

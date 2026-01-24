@@ -6,13 +6,11 @@ import pandas as pd
 import psycopg2
 from psycopg2 import sql
 
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
-
-from logger import get_logger  # noqa: E402
-
-from utils.config import config  # noqa: E402
-
+from logger import get_logger  
+from utils.config import config 
 # Initialize logger for this module
 logger = get_logger(__name__)
 
