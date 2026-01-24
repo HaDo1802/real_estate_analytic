@@ -16,7 +16,8 @@ def send_success_notification(**context):
     try:
         # Get pipeline metrics from XCom or calculate
         records_processed = context["task_instance"].xcom_pull(task_ids="upload_cleaned_data_to_postgres") or "Unknown"
-
+        #records_processed_s3 = context["task_instance"].xcom_pull(task_ids="load_to_s3") or "Unknown"
+        #records_processed = f"Postgres: {records_processed_postgres}"
         # Calculate duration using task instance timing
         task_instance = context["task_instance"]
         if task_instance.start_date and task_instance.end_date:
@@ -146,7 +147,13 @@ with DAG(
         bash_command="python /opt/airflow/etl/load.py",
         do_xcom_push=True,  # Enable XCom capture
     )
-
+    # 5. Load to s3
+    load_to_s3 = BashOperator(
+        task_id="load_to_s3",
+        bash_command="python /opt/airflow/etl/load_to_s3.py",
+        do_xcom_push=True,
+        
+    )
     # 5. Send success email
     success_email = PythonOperator(
         task_id="send_success_email",
@@ -162,6 +169,7 @@ with DAG(
     >> note
     >> clean_data
     >> note_clean_data
-    >> upload_cleaned_data_to_postgres
+    >> [upload_cleaned_data_to_postgres, load_to_s3]   # run in parallel
     >> success_email
 )
+

@@ -2,13 +2,16 @@ from dotenv import load_dotenv
 import boto3
 import os
 import sys
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
-from logger import get_logger  
-from utils.config import config 
+from logger import get_logger
+from utils.config import config
 
 load_dotenv()
 logger = get_logger(__name__)
+
+
 def load_to_s3(file_path, bucket_name, s3_key):
     """
     Uploads a file to an S3 bucket.
@@ -26,11 +29,17 @@ def load_to_s3(file_path, bucket_name, s3_key):
         logger.error(f"Failed to upload {file_path} to S3: {e}")
         raise
 
+
 if __name__ == "__main__":
     # Example usage
-    bucket_name = 'real-estate-scraped-data'
-    raw_file_path = "data/raw/raw_latest.csv"
-    transformed_file_path = "data/transformed/transformed_latest.csv"
+    running_env = config.ENV_TYPE
+    bucket_name = "real-estate-scraped-data"
+    if running_env == "local":
+        raw_file_path = "data/raw/raw_latest.csv"
+        transformed_file_path = "data/transformed/transformed_latest.csv"
+    else:
+        raw_file_path = "/opt/airflow/data/raw/raw_latest.csv"
+        transformed_file_path = "/opt/airflow/data/transformed/transformed_latest.csv"
     s3_key_raw = "raw/raw_latest.csv"
     s3_key_transformed = "transformed/transformed_latest.csv"
 
