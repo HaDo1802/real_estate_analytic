@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import boto3
 import os
 import sys
+from datetime import datetime
+
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
@@ -33,6 +35,8 @@ def load_to_s3(file_path, bucket_name, s3_key):
 if __name__ == "__main__":
     # Example usage
     running_env = config.ENV_TYPE
+    etl_run_id = datetime.now().strftime("%Y%m%d_%H%M")
+    snapshot_date = datetime.now().strftime("%Y%m%d")
     bucket_name = "real-estate-scraped-data"
     if running_env == "local":
         raw_file_path = "data/raw/raw_latest.csv"
@@ -40,8 +44,8 @@ if __name__ == "__main__":
     else:
         raw_file_path = "/opt/airflow/data/raw/raw_latest.csv"
         transformed_file_path = "/opt/airflow/data/transformed/transformed_latest.csv"
-    s3_key_raw = "raw/raw_latest.csv"
-    s3_key_transformed = "transformed/transformed_latest.csv"
+    raw_s3_key = f"raw/raw_{snapshot_date}_{etl_run_id}.csv"
+    transformed_s3_key = f"transformed/transformed_{snapshot_date}_{etl_run_id}.csv"
 
-    load_to_s3(raw_file_path, bucket_name, s3_key_raw)
-    load_to_s3(transformed_file_path, bucket_name, s3_key_transformed)
+    load_to_s3(raw_file_path, bucket_name, raw_s3_key)
+    load_to_s3(transformed_file_path, bucket_name, transformed_s3_key)

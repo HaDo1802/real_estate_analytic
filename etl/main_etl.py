@@ -9,6 +9,7 @@ from extract import fetch_all_locations  # noqa: E402
 from load import load_csv  # noqa: E402
 from logger import get_logger  # noqa: E402
 from transform import main_transform  # noqa: E402
+from load_to_s3 import load_to_s3  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -58,7 +59,9 @@ def run_etl_pipeline():
 
         logger.info("STAGE 2: TRANSFORM")
         raw_latest = os.path.join(raw_dir, "raw_latest.csv")
-        df_transformed, timestamped_file, latest_file = main_transform(input_file=raw_latest, output_dir=transformed_dir)
+        df_transformed, timestamped_file, latest_file = main_transform(
+            input_file=raw_latest, output_dir=transformed_dir
+        )
 
         if df_transformed is None or df_transformed.empty:
             details["error"] = "No data after transformation"
@@ -73,6 +76,23 @@ def run_etl_pipeline():
         details["records_loaded"] = len(df_transformed)
         logger.info("LOAD COMPLETED\n")
 
+        logger.info("Load to S3")
+        snapshot_date = start_time.strftime("%Y%m%d")
+        raw_s3_key = f"raw/raw_{snapshot_date}_{etl_run_id}.csv"
+        transformed_s3_key = f"transformed/transformed_{snapshot_date}_{etl_run_id}.csv"
+
+        load_to_s3(
+            file_path=raw_latest,
+            bucket_name="real-estate-scraped-data",
+            s3_key=raw_s3_key,
+        )
+        load_to_s3(
+            file_path=latest_file,
+            bucket_name="real-estate-scraped-data",
+            s3_key=transformed_s3_key,
+        )
+        logger.info("LOAD TO S3 COMPLETED\n")
+
         end_time = datetime.now()
         duration = end_time - start_time
 
@@ -81,7 +101,9 @@ def run_etl_pipeline():
         quality_rate = (len(df_transformed) / len(df_extracted)) * 100
         details["quality_rate"] = f"{quality_rate:.1f}%"
         logger.info("ETL PIPELINE COMPLETED SUCCESSFULLY")
-        logger.info(f"Duration: {details['duration']} | Quality: {details['quality_rate']}")
+        logger.info(
+            f"Duration: {details['duration']} | Quality: {details['quality_rate']}"
+        )
         return True, details
 
     except Exception as e:

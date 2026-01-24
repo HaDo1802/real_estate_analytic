@@ -169,7 +169,8 @@ with DAG(
     >> note
     >> clean_data
     >> note_clean_data
-    >> [upload_cleaned_data_to_postgres, load_to_s3]   # run in parallel
+    >> load_to_s3
+    >> upload_cleaned_data_to_postgres
     >> success_email
 )
 
