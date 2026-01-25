@@ -173,4 +173,3 @@ with DAG(
     >> upload_cleaned_data_to_postgres
     >> success_email
 )
-
